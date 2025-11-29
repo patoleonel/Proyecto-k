@@ -1,0 +1,28 @@
+{
+  "name": "proyectokeila",
+  "version": "1.0.0",
+  "description": "Videojuego conmemorativo 30 Años",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "dev": "vite",
+    "build": "vite build",
+    "clean": "rm -rf out dist",
+    "package": "npm run build && electron-forge package",
+    "make": "npm run build && electron-forge make"
+  },
+  "keywords": [],
+  "author": "Patol",
+  "license": "ISC",
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
+    "kaplay": "^3001.0.19"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.10.2",
+    "@electron-forge/maker-squirrel": "^7.10.2",
+    "@electron-forge/maker-zip": "^7.10.2",
+    "electron": "^39.2.4",
+    "vite": "^7.2.4"
+  }
+}
