@@ -13,12 +13,12 @@
     - [x] Configure `forge.config.js`
     - [x] Verify "Run Web" (`vite` or simple serve)
     - [x] Verify "Run Electron" (`electron .`)
-- [ ] **Core Systems Implementation**
-    - [ ] **Input Adapter**: Implement hybrid keyboard/touch control (Section 4 of Contexto)
-    - [ ] **Scene Manager**: Basic structure for Stage 1, 2, 3, 4
-    - [ ] **Asset Loader**: Placeholder loading system
-- [ ] **CI/CD Setup**
-    - [ ] Configure GitHub Actions for Pages (Web)
+- [x] **Core Systems Implementation**
+    - [x] **Input Adapter**: Implement hybrid keyboard/touch control (Section 4 of Contexto)
+    - [x] **Scene Manager**: Basic structure for Stage 1, 2, 3, 4
+    - [x] **Asset Loader**: Placeholder loading system
+- [x] **CI/CD Setup**
+    - [x] Configure GitHub Actions for Pages (Web)
 
 ## Week 2: Gameplay Mechanics (The "Giftware" Core)
 - [ ] **Player Controller (Keila)**
