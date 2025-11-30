@@ -71,6 +71,26 @@ k.scene("game", () => {
         "player"
     ]);
 
+    // Companion (Abeja - Protector)
+    let hasCompanion = true;
+    const companion = k.add([
+        k.circle(15),
+        k.pos(player.pos.sub(40, 40)),
+        k.color(255, 215, 0), // Gold
+        k.anchor("center"),
+        "companion"
+    ]);
+
+    // Obstacle (Spike)
+    k.add([
+        k.polygon([k.vec2(0, 30), k.vec2(15, 0), k.vec2(30, 30)]),
+        k.pos(600, k.height() - 78), // On ground
+        k.color(0, 0, 0),
+        k.area(),
+        k.body({ isStatic: true }),
+        "obstacle"
+    ]);
+
     // Ground (Long platform)
     k.add([
         k.rect(2000, 48),
@@ -106,6 +126,11 @@ k.scene("game", () => {
         // Camera Follow
         k.camPos(player.pos);
 
+        // Companion Follow (Lerp for smooth movement)
+        if (hasCompanion) {
+            companion.pos = companion.pos.lerp(player.pos.sub(0, 50), 0.1);
+        }
+
         // Left/Right Movement
         if (k.isKeyDown("left") || k.isKeyDown("a")) {
             player.move(-SPEED, 0);
@@ -122,6 +147,21 @@ k.scene("game", () => {
         // Fall check (Reset if falls off world)
         if (player.pos.y > 1000) {
             k.go("game");
+        }
+    });
+
+    // Collision Logic
+    player.onCollide("obstacle", (obs) => {
+        if (hasCompanion) {
+            k.shake(10);
+            k.destroy(companion);
+            hasCompanion = false;
+            k.destroy(obs); // Destroy obstacle too (optional, or just knockback)
+        } else {
+            k.shake(20);
+            k.wait(0.5, () => {
+                k.go("game"); // Restart
+            });
         }
     });
 });
