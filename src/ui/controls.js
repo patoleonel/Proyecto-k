@@ -67,28 +67,33 @@ export function addVirtualControls(k) {
         k.color(0, 0, 0)
     ]);
 
-    // Touch/Mouse Events
-    // Kaplay doesn't have built-in "isHeld" for UI objects easily without component logic
-    // We'll use simple touch events tracking
+    // Input Loop
+    // Use onUpdate + isHovering/Touch checks to avoid crashing on missing methods like .onDown
+    k.onUpdate(() => {
+        leftPressed = false;
+        rightPressed = false;
+        jumpPressed = false;
 
-    leftBtn.onDown(() => leftPressed = true);
-    leftBtn.onHover(() => { if (k.isMouseDown()) leftPressed = true; }); // Mouse fallback
-    leftBtn.onRelease(() => leftPressed = false);
-    leftBtn.onEnd(() => leftPressed = false); // Touch end
+        // 1. Mouse Check
+        // isHovering() checks if mouse position is within the area
+        if (k.isMouseDown()) {
+            if (leftBtn.isHovering()) leftPressed = true;
+            if (rightBtn.isHovering()) rightPressed = true;
+            if (jumpBtn.isHovering()) jumpPressed = true;
+        }
 
-    rightBtn.onDown(() => rightPressed = true);
-    rightBtn.onHover(() => { if (k.isMouseDown()) rightPressed = true; });
-    rightBtn.onRelease(() => rightPressed = false);
-    rightBtn.onEnd(() => rightPressed = false);
-
-    jumpBtn.onDown(() => jumpPressed = true);
-    jumpBtn.onHover(() => { if (k.isMouseDown()) jumpPressed = true; });
-    jumpBtn.onRelease(() => jumpPressed = false);
-    jumpBtn.onEnd(() => jumpPressed = false);
-
-    // Cleanup on scene switch is handled by Kaplay destroying objects, 
-    // but we need to ensure state doesn't stick if we were holding a button
-    // The nice thing about returning functions is they query current state.
+        // 2. Touch Check (Multi-touch support)
+        // getTouchPoints returns an array of current touches
+        if (k.getTouchPoints) {
+            const touches = k.getTouchPoints();
+            for (const t of touches) {
+                // Check if touch point is inside button area
+                if (leftBtn.hasPoint(t.pos)) leftPressed = true;
+                if (rightBtn.hasPoint(t.pos)) rightPressed = true;
+                if (jumpBtn.hasPoint(t.pos)) jumpPressed = true;
+            }
+        }
+    });
 
     return {
         isLeft: () => leftPressed,
