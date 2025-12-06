@@ -33,27 +33,12 @@ export function sceneIntro(k) {
             ]);
 
             const noBtn = k.add([
-                k.text("[ N ] NO", { size: 24 }),
-                k.pos(k.center().add(0, 150)),
-                k.anchor("center"),
-                k.color(255, 0, 0)
-            ]);
-
-            // Interactions
-            k.onKeyPress("s", () => {
-                k.go("game"); // Start Game
             });
 
-            k.onKeyPress("n", () => {
-                k.shake(20); // Refusal to spawn
-                noBtn.text = "NO ES UNA OPCIÓN";
-                k.wait(1, () => k.go("game")); // Illusion of choice
-            });
-
-            // Also accept tap/click to start
-            k.onMousePress(() => {
-                k.go("game");
-            });
+        // Also accept tap/click to start
+        k.onMousePress(() => {
+            k.go("game");
         });
     });
+});
 }

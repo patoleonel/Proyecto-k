@@ -131,7 +131,7 @@ export function sceneLevel1(k) {
 
             // Fall check (Reset if falls off world)
             if (player.pos.y > 1000) {
-                k.go("game");
+                k.go("level1");
             }
 
             // Update Health UI
