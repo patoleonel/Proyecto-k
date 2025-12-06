@@ -9,7 +9,16 @@ export function sceneLevel1(k) {
         const SPEED = 320;
         const JUMP_FORCE = 800;
 
-        // UI Layer (Fixed)
+        // Background (Sky Blue)
+        k.add([
+            k.rect(k.width(), k.height()),
+            k.pos(0, 0),
+            k.fixed(),
+            k.color(135, 206, 235), // Sky Blue
+            k.z(-100)
+        ]);
+
+        // UI Layer
         k.add([
             k.text("Stage 1: Campestre", { size: 32 }),
             k.pos(24, 24),
@@ -139,8 +148,8 @@ export function sceneLevel1(k) {
             ]);
 
             k.add([
-                k.text("Elige tu Compañía", { size: 32 }),
-                k.pos(k.width() / 2, 100),
+                k.text("Elige tu Compañía\n(Flechas y ESPACIO)", { size: 32, align: "center" }),
+                k.pos(k.width() / 2, 80),
                 k.anchor("center"),
                 k.fixed(),
                 k.color(255, 255, 255),
@@ -154,20 +163,23 @@ export function sceneLevel1(k) {
                 { name: "Hermana", sprite: "hermana" }
             ];
 
+            let selectedIndex = 0;
+            const buttons = [];
+
             companions.forEach((comp, index) => {
                 const yPos = 200 + (index * 80);
 
-                // Button
+                // Button Background
                 const btn = k.add([
                     k.rect(300, 60),
                     k.pos(k.width() / 2, yPos),
                     k.anchor("center"),
                     k.fixed(),
-                    k.color(255, 255, 255),
-                    k.outline(4, k.BLACK),
+                    k.color(0, 0, 0), // Default black
+                    k.outline(4, k.WHITE),
                     k.area(),
                     "ui_overlay",
-                    "btn" // Tag for interaction
+                    "btn"
                 ]);
 
                 // Text
@@ -176,35 +188,71 @@ export function sceneLevel1(k) {
                     k.pos(k.width() / 2, yPos),
                     k.anchor("center"),
                     k.fixed(),
-                    k.color(0, 0, 0),
+                    k.color(255, 255, 255),
                     "ui_overlay"
                 ]);
 
                 // Icon
                 k.add([
-                    k.sprite(comp.sprite, { width: 40, height: 40 }),
+                    k.sprite(comp.sprite, { height: 40 }), // Maintain aspect ratio
                     k.pos(k.width() / 2 - 120, yPos),
                     k.anchor("center"),
                     k.fixed(),
                     "ui_overlay"
                 ]);
 
-                // Click Handler
-                btn.onClick(() => {
-                    // Spawn Companion
-                    hasCompanion = true;
-                    compEntity = k.add([
-                        k.sprite(comp.sprite, { width: 30, height: 30 }),
-                        k.pos(player.pos.sub(40, 40)),
-                        k.anchor("center"),
-                        "companion"
-                    ]);
+                buttons.push(btn);
 
-                    // Resume Game
-                    k.destroyAll("ui_overlay");
-                    isGamePaused = false;
-                });
+                // Mouse Click Handler (Keep hybrid support)
+                btn.onClick(() => selectCompanion(index));
             });
+
+            // Highlight Logic
+            function updateHighlight() {
+                buttons.forEach((btn, idx) => {
+                    if (idx === selectedIndex) {
+                        btn.color = k.rgb(100, 100, 255); // Highlight Blue
+                    } else {
+                        btn.color = k.rgb(0, 0, 0); // Default
+                    }
+                });
+            }
+            updateHighlight();
+
+            // Keyboard Handlers (Bound to this scope/state)
+            const downHandler = k.onKeyPress("down", () => {
+                selectedIndex = (selectedIndex + 1) % companions.length;
+                updateHighlight();
+            });
+            const upHandler = k.onKeyPress("up", () => {
+                selectedIndex = (selectedIndex - 1 + companions.length) % companions.length;
+                updateHighlight();
+            });
+            const confirmHandler = k.onKeyPress("space", () => {
+                selectCompanion(selectedIndex);
+            });
+
+            function selectCompanion(index) {
+                // Cleanup handlers to avoid leaks
+                downHandler.cancel();
+                upHandler.cancel();
+                confirmHandler.cancel();
+
+                // Spawn Companion
+                hasCompanion = true;
+                const comp = companions[index];
+
+                compEntity = k.add([
+                    k.sprite(comp.sprite, { height: 30 }), // Aspect ratio fix
+                    k.pos(player.pos.sub(40, 40)),
+                    k.anchor("center"),
+                    "companion"
+                ]);
+
+                // Resume Game
+                k.destroyAll("ui_overlay");
+                isGamePaused = false;
+            }
         }
 
         // Collision Logic
@@ -229,11 +277,11 @@ export function sceneLevel1(k) {
                 k.text("¡Etapa 1 Completada!", { size: 48 }),
                 k.pos(k.center()),
                 k.anchor("center"),
-                k.color(0, 0, 0),
+                k.color(255, 255, 255), // White Text Fix
                 k.fixed()
             ]);
             k.wait(2, () => {
-                k.go("intro");
+                k.go("level2");
             });
         });
     });

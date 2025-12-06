@@ -2,26 +2,58 @@ import { setupInput } from "../utils/input";
 
 export function sceneIntro(k) {
     k.scene("intro", () => {
-        const { inputJump } = setupInput(k);
+        k.setBackground(0, 0, 0); // Black void
 
-        k.add([
-            k.text("El Viaje de Keila\n30 Años", { size: 48 }),
+        // Phase 1: The Truth
+        const title = k.add([
+            k.text("La vida es caótica...", { size: 32 }),
             k.pos(k.center()),
             k.anchor("center"),
-            k.color(0, 0, 0), // Black text
+            k.color(255, 255, 255),
+            k.opacity(0),
+            { fadeTime: 2 } // Custom state for fading
         ]);
 
-        k.add([
-            k.text("Presiona ESPACIO o TOCA para Iniciar", { size: 24 }),
-            k.pos(k.center().add(0, 100)),
-            k.anchor("center"),
-            k.color(0, 0, 0),
-        ]);
-
-        k.onUpdate(() => {
-            if (inputJump()) {
-                k.go("game");
+        // Simple fade in effect
+        title.onUpdate(() => {
+            if (title.opacity < 1) {
+                title.opacity += k.dt();
             }
+        });
+
+        // Phase 2: The Choice triggers after a delay
+        k.wait(3, () => {
+            title.text = "La vida es caótica.\n\n¿Deseas Nacer?";
+
+            const yesBtn = k.add([
+                k.text("[ S ] SÍ", { size: 24 }),
+                k.pos(k.center().add(0, 100)),
+                k.anchor("center"),
+                k.color(0, 255, 0)
+            ]);
+
+            const noBtn = k.add([
+                k.text("[ N ] NO", { size: 24 }),
+                k.pos(k.center().add(0, 150)),
+                k.anchor("center"),
+                k.color(255, 0, 0)
+            ]);
+
+            // Interactions
+            k.onKeyPress("s", () => {
+                k.go("game"); // Start Game
+            });
+
+            k.onKeyPress("n", () => {
+                k.shake(20); // Refusal to spawn
+                noBtn.text = "NO ES UNA OPCIÓN";
+                k.wait(1, () => k.go("game")); // Illusion of choice
+            });
+
+            // Also accept tap/click to start
+            k.onMousePress(() => {
+                k.go("game");
+            });
         });
     });
 }

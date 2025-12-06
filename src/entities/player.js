@@ -1,6 +1,6 @@
 export function createPlayer(k, pos) {
     const player = k.add([
-        k.sprite("maria", { width: 50, height: 80 }), // Resize to fit
+        k.sprite("maria", { height: 80 }), // Resize to fit, keep aspect ratio
         k.pos(pos),
         k.area(),
         k.body(),

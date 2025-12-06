@@ -1,6 +1,26 @@
-# El Viaje de Keila
+# El camino de Keila
 
-Un videojuego de plataformas conmemorativo desarrollado para celebrar el 30 cumpleaños de Keila. Este proyecto es un "Giftware" diseñado para ser jugado tanto en la web como en una aplicación de escritorio.
+**"El camino de Keila"** es un videojuego de plataformas 2D ("Giftware") que celebra una travesía de vida. Una experiencia introspectiva sobre el crecimiento, la integración de la sombra y la evolución personal.
+
+> *"La vida es caótica. ¿Deseas nacer?"*
+
+## 🌟 Mecánicas Principales (Ludonarrativa)
+
+El juego se basa en la "Ingeniería de las Obviedades": todo destino es inevitable, pero el camino importa.
+
+*   **Evolución Temporal**: El personaje crece y cambia de forma (Skin) a medida que avanza por las etapas de la vida:
+    1.  **Maria Micaela** (0-10): Campestre e inocente.
+    2.  **Mica** (10-20): La etapa escolar y el campo mixto.
+    3.  **Srta. Entropía**: La juventud y el caos.
+    4.  **Roja**: La madurez previa.
+    5.  **Keila**: La forma final.
+
+*   **Sistema de Compañías**: No hay "vidas" tradicionales. Tus "vidas" son tus seres queridos (Compañías).
+    *   Aparecen como **Eventos de Tarot**.
+    *   Actúan como escudo (Sacrificio) ante el daño.
+    *   Algunas compañías pueden ser "dañinas" o emocionalmente complejas.
+
+*   **El "Upside Down"**: Una dimensión alternativa regida por la Sombra (*Camelia*). Controles invertidos y soledad absoluta.
 
 ## 🚀 Stack Tecnológico
 

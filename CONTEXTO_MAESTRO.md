@@ -1,116 +1,95 @@
-# CONTEXTO MAESTRO: Proyecto Videojuego Conmemorativo "30 Años" - KEILA'S JOURNEY
+# CONTEXTO MAESTRO: Proyecto Videojuego "El Camino de Keila" (v2.0)
 
 **ESTE DOCUMENTO ES LA FUENTE ÚNICA DE VERDAD (SINGLE SOURCE OF TRUTH).**
-Cualquier instrucción generada por el Agente debe alinearse estrictamente con las decisiones de arquitectura, stack tecnológico y mecánicas de juego aquí descritas.
+Cualquier instrucción de desarrollo debe alinearse estrictamente con las decisiones aquí descritas.
 
 ---
 
 ## 1. Resumen Ejecutivo y Restricciones
-El objetivo es desarrollar un videojuego de plataformas 2D ("Giftware") para celebrar el 30 cumpleaños de **Keila**.
+Juego de plataformas 2D ("Giftware") para celebrar el 30 cumpleaños de **Keila**. Una travesía introspectiva sobre el crecimiento, la sombra y la integración del ser.
 
-### Restricciones Críticas
-* **Plazo:** 1 mes improrrogable.
-* **Desarrollador:** 1 persona (asistida por Google Antigravity).
-* **Distribución Dual:** Web (móvil/escritorio) + Ejecutable Windows (`.exe`).
-* **Arquitectura:** Fuente Única (Single Source). NO bifurcar ramas por plataforma.
+* **Título:** El camino de Keila.
+* **Plazo:** 1 mes (Deadline: Cumpleaños de 30).
+* **Distribución:** Web + Ejecutable Windows (`.exe` vía Electron).
+* **Arquitectura:** Rama única (`main`).
+* **Persistencia:** Sistema de Guardado Local (`localStorage`) para mantener el historial de avance entre sesiones.
 
 ---
 
-## 2. Stack Tecnológico (Selección Definitiva)
+## 2. Stack Tecnológico (Definitivo)
 
-| Componente | Tecnología Seleccionada | Justificación Técnica |
+| Componente | Tecnología | Justificación |
 | :--- | :--- | :--- |
-| **Lenguaje** | JavaScript (ES6+) | Universalidad y compatibilidad con Electron. |
-| **Motor** | **Kaplay.js** | Sintaxis ECS concisa (`add([body(), area()...])`) ideal para IA. |
-| **IDE / IA** | Google Antigravity | Desarrollo agéntico (Gemini 3 Pro). |
-| **Empaquetado** | **Electron Forge** | Convierte la web app en un `.exe` nativo. |
-| **Hosting** | GitHub Pages | Despliegue automático. |
-| **Repo** | GitHub | Trunk-Based Development (Rama `main` única). |
+| **Lenguaje** | JavaScript (ES6+) | Universalidad y compatibilidad con web/desktop. |
+| **Motor** | **Kaplay.js** | Sintaxis ECS concisa, ideal para prototipado rápido e IA. |
+| **Empaquetado** | **Electron Forge** | Conversión de la web app a `.exe` nativo. |
+| **Audio** | **Howler.js / Kaplay** | Assets de *BloodPixelHero* (Freesound). |
+| **Arte** | Mix Media | Sprites Pixel Art sobre **Fotos Reales** (Fondos/Tarot). |
 
 ---
 
-## 3. Diseño de Mecánicas y Ludonarrativa (CORE DEL JUEGO)
+## 3. "Ingeniería de las Obviedades" (Mecánicas de Juego)
 
-### 3.1 Filosofía de Diseño
-* **"Todos los caminos llevan a Roma (30 años)":** Las decisiones del jugador (subir/bajar puentes, tomar desvíos) pueden alterar la dificultad o el tiempo de recorrido, pero el destino final (el cumpleaños de 30) es inevitable.
+### 3.1 Loop Principal (Vida y Daño)
+* **Salud Total:** 5 Corazones.
+* **Daño (El "Honguito Malo"):** El objeto dañino se llama paradójicamente **"Salud"** (representando hipocondría o pensamientos intrusivos). Si se toca, **resta** una vida.
+* **Curación (Recuperar Vida):** Elementos que restauran corazones perdidos:
+    * Ítem: *Sillón de Terapia*.
+    * Ítem: *Lapicera y Cuaderno*.
+    * Ítem: *Burbuja de texto "¿Cómo estás?"*.
 
-### 3.2 Sistema de Evolución y Personajes
-El personaje principal es **Keila**, pero atraviesa distintas encarnaciones. La evolución/involución es dinámica (estilo Mario Bros) según los ítems recogidos, pero tiene restricciones por etapa.
+### 3.2 El "Upside Down" (Modo Caos)
+Una dimensión alternativa regida por **Camelia** (La Sombra/Evil Mica).
+* **Activación:** Camelia aparece aleatoriamente: *"¿Deseas entrar en el caos?"*.
+* **Efectos de Estado:**
+    * Pantalla volteada verticalmente (Flip Y).
+    * Inversión de colores (Negativo) u oscurecimiento severo.
+    * **CONTROLES INVERTIDOS** (Izquierda es derecha, saltar es bajar).
+    * **Aislamiento:** Las compañías desaparecen; el jugador está solo.
+* **Salida (Condición de Victoria):**
+    1.  Encontrar a **"Tu Yo del Upside Down"**.
+    2.  Localizar el ítem **"Terapia"** (visible pero bloqueado por obstáculos/pinches).
+    3.  [cite_start]**La Pregunta Poética:** Responder una pregunta existencial basada en *Caramelo de Trampas* [cite: 1] para volver:
+        * [cite_start]*Ejemplo:* "Si todo es trampa y la trampa no..." -> **"...existe"** [cite: 278-279].
+        * *Ejemplo:* "¿Qué es la sangre cuando su altar te deja de...?" [cite_start]-> **"...rodillas"** [cite: 166-167].
 
-**Línea Evolutiva:**
-1.  **Maria Micaela** (Base más básica)
-2.  **Mica**
-3.  **Srta Entropía**
-4.  **Roja**
-# CONTEXTO MAESTRO: Proyecto Videojuego Conmemorativo "30 Años" - KEILA'S JOURNEY
+### 3.3 Sistema de Compañías y Sacrificio
+* **Mecánica de Avance:** Para pasar de un "Mundo/Etapa" al siguiente, Keila debe **dejar atrás** a una de sus compañías activas.
+* **Decisión Final:** En la última pantalla, debe elegir a quién deja definitivamente para cruzar el umbral de los 30 años.
+* **Audio Dinámico:** La música cambia sutilmente según la compañía activa.
 
-**ESTE DOCUMENTO ES LA FUENTE ÚNICA DE VERDAD (SINGLE SOURCE OF TRUTH).**
-Cualquier instrucción generada por el Agente debe alinearse estrictamente con las decisiones de arquitectura, stack tecnológico y mecánicas de juego aquí descritas.
-
----
-
-## 1. Resumen Ejecutivo y Restricciones
-El objetivo es desarrollar un videojuego de plataformas 2D ("Giftware") para celebrar el 30 cumpleaños de **Keila**.
-
-### Restricciones Críticas
-* **Plazo:** 1 mes improrrogable.
-* **Desarrollador:** 1 persona (asistida por Google Antigravity).
-* **Distribución Dual:** Web (móvil/escritorio) + Ejecutable Windows (`.exe`).
-* **Arquitectura:** Fuente Única (Single Source). NO bifurcar ramas por plataforma.
-
----
-
-## 2. Stack Tecnológico (Selección Definitiva)
-
-| Componente | Tecnología Seleccionada | Justificación Técnica |
-| :--- | :--- | :--- |
-| **Lenguaje** | JavaScript (ES6+) | Universalidad y compatibilidad con Electron. |
-| **Motor** | **Kaplay.js** | Sintaxis ECS concisa (`add([body(), area()...])`) ideal para IA. |
-| **IDE / IA** | Google Antigravity | Desarrollo agéntico (Gemini 3 Pro). |
-| **Empaquetado** | **Electron Forge** | Convierte la web app en un `.exe` nativo. |
-| **Hosting** | GitHub Pages | Despliegue automático. |
-| **Repo** | GitHub | Trunk-Based Development (Rama `main` única). |
+### 3.4 Mecánica de Siembra (Planting)
+* **Evento:** Montículo de tierra en etapas tempranas. Decisión: Plantar o ignorar.
+* **Consecuencia (Payoff):**
+    * *Si plantó:* Aparece un **Puente de Planta** en una etapa avanzada para cruzar un abismo.
+    * *Si NO plantó:* El puente no existe; se debe atravesar un camino peligroso de "Pensamientos Intrusivos".
 
 ---
 
-## 3. Diseño de Mecánicas y Ludonarrativa (CORE DEL JUEGO)
+## 4. Narrativa y Evolución (Ludonarrativa)
 
-### 3.1 Filosofía de Diseño
-* **"Todos los caminos llevan a Roma (30 años)":** Las decisiones del jugador (subir/bajar puentes, tomar desvíos) pueden alterar la dificultad o el tiempo de recorrido, pero el destino final (el cumpleaños de 30) es inevitable.
+### 4.1 Intro: El Nacimiento
+* Pantalla negra. Texto: *"La vida es caótica."*
+* Prompt: *"¿Deseas nacer?"* (Sí / No).
+* Al aceptar, el personaje cae al escenario con físicas activas.
 
-### 3.2 Sistema de Evolución y Personajes
-El personaje principal es **Keila**, pero atraviesa distintas encarnaciones. La evolución/involución es dinámica (estilo Mario Bros) según los ítems recogidos, pero tiene restricciones por etapa.
+### 4.2 Evolución del Personaje (Skins)
+El personaje cambia según ítems y etapa, pero respeta una cronología base:
+1.  **Maria Micaela** (Infancia).
+2.  **Mica** (Adolescencia).
+3.  **Srta. Entropía** (Juventud caótica).
+4.  **Roja** (Madurez previa).
+5.  **Keila** (Actualidad - Forma Final).
 
-**Línea Evolutiva:**
-1.  **Maria Micaela** (Base más básica)
-2.  **Mica**
-3.  **Srta Entropía**
-4.  **Roja**
-5.  **Keila** (Forma final/actual)
+### 4.3 Clímax: La Fusión con la Sombra
+* **Jefe Final:** No se derrota a golpes. Se resiste.
+* **Revelación:** La figura encapuchada es **Camelia** (Evil Mica).
+* **Resolución:** Keila debe abrazar a Camelia.
+* **Efecto:** Revelacion del nombre Camelia, transformandose en Micaela,fusión épica, música triunfal, los colores se estabilizan. Integración de la sombra.
 
-**Reglas por Pantalla (Etapa):**
+---
 
-| Etapa | Edad Aprox | Contexto Visual | Regla de Evolución |
-| :--- | :--- | :--- | :--- |
-| **1** | 0 - 10 | **Campestre / Colmenas** | **Libre.** Inicia como *Maria Micaela*. Puede evolucionar a todas y volver a la base. |
-| **2** | 10 - 20 | **Escuela / Campo Mixto** | **Suelo elevado.** Inicia como *Mica*. NO puede involucionar a *Maria Micaela*. |
-| **3** | 20 - 25 | **Ciudad / Cine / Fotos** | **Suelo elevado.** Inicia como *Mica*. NO puede involucionar a *Maria Micaela*. |
-| **4** | 25 - 30 | **Abstracto / Final** | **Suelo elevado.** Inicia como *Mica*. |
-
-> **Nota:** Cada versión tendrá un diseño visual distinto y un "Poder Único" (a definir en implementación, dejar placeholder en código).
-
-### 3.3 Sistema de "Compañías" (Vidas y Debuffs)
-No hay barra de vida tradicional. **La vida son las Compañías.**
-Los compañeros no siempre están presentes. **Aparecen como EVENTOS** al interactuar con ciertos elementos del nivel.
-*   Al activarse el evento, se le da a elegir al jugador quién quiere que lo acompañe (según las opciones disponibles en esa etapa).
-*   Si la compañía desaparece (por proteger de un golpe), el jugador puede quedar solo un tiempo hasta el siguiente evento.
-
-* **Compañía Protectora (Escudo):** Si el jugador choca con un obstáculo dañino, la compañía absorbe el golpe y desaparece (funciona como +1 Vida).
-* **Compañía Dañina (Tóxica):** Al elegirlos o al recibir daño, penalizan al jugador (restan vida real o fallan en proteger).
-
-```javascript
-// Patrón de diseño obligatorio
-function inputJump() {
-   return isKeyPress("space") || uiJumpBtn.isClicked();
-}
-```
+## 5. Activos y Estética
+* **Estilo:** Pixel art sobrepuesto en **Fotografías Reales** (Fondos/Plataformas).
+* **UI:** Barra de 5 corazones, Carta de Tarot (indicador de nivel/estado).
+* [cite_start]**Textos:** Uso de *Caramelo de Trampas* [cite: 1] para narrativa y acertijos.
