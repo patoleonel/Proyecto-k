@@ -1,9 +1,12 @@
+import { addVirtualControls } from "../ui/controls";
+
 export function setupInput(k) {
-    const uiJumpBtn = {
-        isClicked: () => k.isMousePressed()
-    };
+    // Initialize Virtual Controls
+    const mobileControls = addVirtualControls(k);
 
     return {
-        inputJump: () => k.isKeyPressed("space") || uiJumpBtn.isClicked()
+        isLeft: () => k.isKeyDown("left") || k.isKeyDown("a") || mobileControls.isLeft(),
+        isRight: () => k.isKeyDown("right") || k.isKeyDown("d") || mobileControls.isRight(),
+        isJump: () => k.isKeyPressed("space") || k.isKeyPressed("w") || k.isKeyPressed("up") || mobileControls.isJump()
     };
 }

@@ -5,74 +5,11 @@ export function sceneLevel2(k) {
     k.scene("level2", () => {
         k.setGravity(1600);
         let isGamePaused = false;
-        const { inputJump } = setupInput(k);
+        const { isLeft, isRight, isJump } = setupInput(k);
         const SPEED = 320;
         const JUMP_FORCE = 800;
 
-        // UI Layer
-        k.camScale(1.5); // Zoom in
-
-        // Player (Mica - Evolution!)
-        // Note: Using "mica" sprite instead of "maria"
-        const player = k.add([
-            k.sprite("mica", { height: 80 }), // Only set height to keep aspect ratio
-            k.pos(100, k.height() - 200), // Spawning a bit higher
-            k.area(),
-            k.body(),
-            k.anchor("center"),
-            "player"
-        ]);
-
-        // Companion Logic (Inherited? For now restart logic)
-        // TODO: Pass companion state from previous level
-        let hasCompanion = false;
-        let compEntity = null;
-
-        // Background: "Campo Mixto" - slightly different color or elements
-        k.add([
-            k.rect(k.width(), k.height()),
-            k.pos(0, 0),
-            k.fixed(),
-            k.color(100, 149, 237), // Cornflower Blue (darker sky)
-            k.z(-100)
-        ]);
-
-        // Ground (Bottomless pit essentially, but safe start)
-        k.add([
-            k.rect(400, 48),
-            k.pos(0, k.height() - 48),
-            k.outline(4),
-            k.area(),
-            k.body({ isStatic: true }),
-            k.color(100, 100, 100) // Concrete/School floor
-        ]);
-
-        // Elevated Platforms
-        const platforms = [
-            { pos: k.vec2(500, k.height() - 150), width: 200 },
-            { pos: k.vec2(800, k.height() - 250), width: 200 },
-            { pos: k.vec2(1100, k.height() - 350), width: 200 },
-            { pos: k.vec2(1400, k.height() - 450), width: 300 }, // Thor platform
-        ];
-
-        platforms.forEach(plat => {
-            k.add([
-                k.rect(plat.width, 20),
-                k.pos(plat.pos),
-                k.outline(2),
-                k.area(),
-                k.body({ isStatic: true }),
-                k.color(139, 69, 19) // Wood/Desk color
-            ]);
-        });
-
-        // Thor Event (The Dog!)
-        k.add([
-            k.sprite("thor", { height: 60 }), // Keep aspect ratio
-            k.pos(1500, k.height() - 510), // On the last platform
-            k.area(),
-            "thor_npc"
-        ]);
+        // ... (UI Layer, Player, etc.)
 
         // Movement Logic
         k.onUpdate(() => {
@@ -81,26 +18,25 @@ export function sceneLevel2(k) {
             // Camera Follow
             k.camPos(player.pos);
 
-            // Companion Follow (Lerp for smooth movement)
+            // Companion Follow
             if (hasCompanion && compEntity) {
-                // Check if companion still exists before lerp
-                if (compEntity) { // Removed .exists() to prevent crash
+                if (compEntity) {
                     compEntity.pos = compEntity.pos.lerp(player.pos.sub(0, 50), 0.1);
                 }
             }
 
             // Left/Right Movement
-            if (k.isKeyDown("left") || k.isKeyDown("a")) {
+            if (isLeft()) {
                 player.move(-SPEED, 0);
                 player.flipX = true;
             }
-            if (k.isKeyDown("right") || k.isKeyDown("d")) {
+            if (isRight()) {
                 player.move(SPEED, 0);
                 player.flipX = false;
             }
 
             // Jump
-            if (inputJump() && player.isGrounded()) {
+            if (isJump() && player.isGrounded()) {
                 player.jump(JUMP_FORCE);
             }
 

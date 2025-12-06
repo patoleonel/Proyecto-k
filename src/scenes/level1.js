@@ -1,11 +1,14 @@
 import { createPlayer } from "../entities/player";
 import { setupInput } from "../utils/input";
+import { createHealthUI } from "../ui/health";
 
 export function sceneLevel1(k) {
-    k.scene("game", () => {
+    k.scene("level1", () => {
         k.setGravity(1600);
         let isGamePaused = false;
-        const { inputJump } = setupInput(k);
+
+        // Input Setup
+        const { isLeft, isRight, isJump } = setupInput(k);
         const SPEED = 320;
         const JUMP_FORCE = 800;
 
@@ -26,6 +29,9 @@ export function sceneLevel1(k) {
             k.color(0, 0, 0),
             "ui"
         ]);
+
+        // Health UI
+        const healthUI = createHealthUI(k);
 
         // Player (Maria Micaela)
         const player = createPlayer(k, k.vec2(100, 100));
@@ -109,23 +115,28 @@ export function sceneLevel1(k) {
             }
 
             // Left/Right Movement
-            if (k.isKeyDown("left") || k.isKeyDown("a")) {
+            if (isLeft()) {
                 player.move(-SPEED, 0);
                 player.flipX = true;
             }
-            if (k.isKeyDown("right") || k.isKeyDown("d")) {
+            if (isRight()) {
                 player.move(SPEED, 0);
                 player.flipX = false;
             }
 
             // Jump
-            if (inputJump() && player.isGrounded()) {
+            if (isJump() && player.isGrounded()) {
                 player.jump(JUMP_FORCE);
             }
 
             // Fall check (Reset if falls off world)
             if (player.pos.y > 1000) {
                 k.go("game");
+            }
+
+            // Update Health UI
+            if (player.exists()) {
+                healthUI.update(player.hp);
             }
         });
 
@@ -266,8 +277,27 @@ export function sceneLevel1(k) {
             } else {
                 k.shake(20);
                 k.wait(0.5, () => {
-                    k.go("game");
+                    k.go("level1"); // Fix: Use level1 instead of "game" if that's the key
                 });
+            }
+        });
+
+        // Test Hazard "Honguito Malo"
+        k.add([
+            k.text("Honguito\nMalo", { size: 16 }),
+            k.pos(600, k.height() - 100),
+            k.color(255, 0, 255), // Magenta placeholder
+            k.area(),
+            "hazard"
+        ]);
+
+        player.onCollide("hazard", (h) => {
+            player.hurt(1);
+            // Optional: pushback
+            if (player.pos.x < h.pos.x) {
+                player.move(-500, -200);
+            } else {
+                player.move(500, -200);
             }
         });
 
