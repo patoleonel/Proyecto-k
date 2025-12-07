@@ -45,7 +45,7 @@ export function sceneIntro(k) {
 
             // Interactions
             k.onKeyPress("s", () => {
-                k.go("level1"); // Start Game
+                k.go("level1"); // Start Game Correctly
             });
 
             k.onKeyPress("n", () => {

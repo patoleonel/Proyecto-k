@@ -1,24 +1,83 @@
 import { createPlayer } from "../entities/player";
 import { setupInput } from "../utils/input";
 import { createHealthUI } from "../ui/health";
+import { startDialog } from "../ui/dialog";
 
 export function sceneLevel1(k) {
     k.scene("level1", () => {
-        k.setGravity(1600);
+        k.setGravity(0);
         let isGamePaused = false;
+        let isDialogActive = true;
+
+        // Intro Narrative
+        isGamePaused = true;
+        startDialog(k, [
+            "Bienvenida a la existencia.",
+            "Todo es extraño y nuevo aqui.",
+            "Camina hacia la derecha para crecer."
+        ], () => {
+            isGamePaused = false;
+            isDialogActive = false;
+            k.setGravity(1600);
+        });
 
         // Input Setup
         const { isLeft, isRight, isJump } = setupInput(k);
         const SPEED = 320;
         const JUMP_FORCE = 800;
 
-        // Background (Sky Blue)
+        // Background
+        k.setBackground(135, 206, 235);
+
+        // 2. Distant Scenery (Clouds, Bushes)
+        for (let i = 0; i < 20; i++) {
+            // Clouds (Moving)
+            k.add([
+                k.sprite("cloud"),
+                k.pos(k.rand(-500, 5000), k.rand(0, 300)),
+                k.scale(0.15),
+                k.z(-100),
+                k.move(20, 0), // Slow drift to the right
+                "cloud"
+            ]);
+
+            // Bushes (Static but aligned)
+            if (i % 2 === 0) {
+                k.add([
+                    k.sprite("bush"),
+                    k.pos(i * 400 + k.rand(-50, 50), k.height() - 40), // Ground level exactly (Row 8 starts at height-40)
+                    k.anchor("bot"),
+                    k.scale(0.08),
+                    k.z(-80),
+                ]);
+            }
+        }
+
+        // 3. Featured Structures (Galpon, Beehives)
+        // Shed
         k.add([
-            k.rect(k.width(), k.height()),
-            k.pos(0, 0),
-            k.fixed(),
-            k.color(135, 206, 235), // Sky Blue
-            k.z(-100)
+            k.sprite("shed"),
+            k.pos(600, k.height() - 40), // Aligned to floor
+            k.anchor("bot"),
+            k.scale(0.3),
+            k.z(-90)
+        ]);
+
+        // Beehives
+        k.add([
+            k.sprite("beehive"),
+            k.pos(300, k.height() - 40),
+            k.anchor("bot"),
+            k.scale(0.1),
+            k.z(-89)
+        ]);
+
+        k.add([
+            k.sprite("beehive"),
+            k.pos(450, k.height() - 40),
+            k.anchor("bot"),
+            k.scale(0.1),
+            k.z(-89)
         ]);
 
         // UI Layer
@@ -33,8 +92,10 @@ export function sceneLevel1(k) {
         // Health UI
         const healthUI = createHealthUI(k);
 
-        // Player (Maria Micaela)
-        const player = createPlayer(k, k.vec2(100, 100));
+        // Player (Maria Micaela - New Sprite)
+        // Note: The sprite is now loaded as "maria", so createPlayer should arguably pick that up if it uses the string "maria".
+        // Let's verify player.js uses "maria" or pass it explicitly.
+        const player = createPlayer(k, k.vec2(100, k.height() - 90)); // Checks player.js next to ensure it uses sprite() logic.
 
         // Companion Logic
         let hasCompanion = false;
@@ -52,50 +113,113 @@ export function sceneLevel1(k) {
             { isCard: true }
         ]);
 
-        // Ground (Long platform)
-        k.add([
-            k.rect(2000, 48),
-            k.pos(0, k.height() - 48),
-            k.outline(4),
-            k.area(),
-            k.body({ isStatic: true }),
-            k.color(34, 139, 34) // Forest Green
-        ]);
+        const mapHeight = 10 * 20; // 10 rows * 20px
+        const levelConfig = {
+            tileWidth: 20,
+            tileHeight: 20,
+            pos: k.vec2(0, k.height() - mapHeight), // Align to bottom
+            tiles: {
+                "=": () => [
+                    k.sprite("ground"), // Use new ground sprite
+                    k.area(),
+                    k.body({ isStatic: true }),
+                    "ground"
+                ],
+                "-": () => [
+                    k.sprite("brick"),
+                    k.area(),
+                    k.body({ isStatic: true }),
+                    "platform"
+                ],
+                "$": () => [
+                    k.sprite("coin"),
+                    k.area(),
+                    "coin"
+                ],
+                "%": () => [
+                    k.sprite("surprise"),
+                    k.area(),
+                    k.body({ isStatic: true }),
+                    "coin-surprise"
+                ],
+                "^": () => [
+                    k.sprite("evil-shroom"),
+                    k.area(),
+                    k.body(),
+                    k.anchor("bot"),
+                    "hazard",
+                    "enemy",
+                    {
+                        dir: -1,
+                        update() {
+                            this.move(this.dir * 40, 0); // Walk left/right
+                        }
+                    }
+                ],
+                "*": () => [
+                    k.sprite("surprise"),
+                    k.area(),
+                    k.body({ isStatic: true }),
+                    "mushroom-surprise"
+                ],
+                "}": () => [
+                    k.sprite("unboxed"),
+                    k.area(),
+                    k.body({ isStatic: true }),
+                    "unboxed"
+                ],
+                "(": () => [
+                    k.sprite("pipe-bl"),
+                    k.area(),
+                    k.body({ isStatic: true }),
+                    k.scale(0.5), // Pipes are big
+                    "pipe"
+                ],
+                ")": () => [
+                    k.sprite("pipe-br"),
+                    k.area(),
+                    k.body({ isStatic: true }),
+                    k.scale(0.5),
+                    "pipe"
+                ],
+                "[": () => [
+                    k.sprite("pipe-tl"),
+                    k.area(),
+                    k.body({ isStatic: true }),
+                    k.scale(0.5),
+                    "pipe"
+                ],
+                "]": () => [
+                    k.sprite("pipe-tr"),
+                    k.area(),
+                    k.body({ isStatic: true }),
+                    k.scale(0.5),
+                    "pipe"
+                ],
+            }
+        };
 
-        // Platform 1
-        k.add([
-            k.rect(200, 20),
-            k.pos(400, k.height() - 150),
-            k.outline(2),
-            k.area(),
-            k.body({ isStatic: true }),
-            k.color(139, 69, 19) // Saddle Brown
-        ]);
+        const levelLayout = [
+            "                                                                    ",
+            "                                                                    ",
+            "                                                                    ",
+            "                                                                    ",
+            "                      ----                                          ",
+            "                                   ----                             ",
+            "           ----            %       ^             []                 ",
+            "                        ^                        ()                 ",
+            "====================================================================",
+            "====================================================================",
+        ];
 
-        // Platform 2
-        k.add([
-            k.rect(200, 20),
-            k.pos(700, k.height() - 250),
-            k.outline(2),
-            k.area(),
-            k.body({ isStatic: true }),
-            k.color(139, 69, 19)
-        ]);
+        k.addLevel(levelLayout, levelConfig);
 
-        // Obstacle (Spike)
-        k.add([
-            k.polygon([k.vec2(0, 30), k.vec2(15, 0), k.vec2(30, 30)]),
-            k.pos(600, k.height() - 78), // On ground
-            k.color(0, 0, 0),
-            k.area(),
-            k.body({ isStatic: true }),
-            "obstacle"
-        ]);
+        // Obstacle removed as per user request to clean up visuals
 
         // Portal (Level End)
         k.add([
             k.rect(50, 100),
-            k.pos(1900, k.height() - 148), // On ground
+            k.pos(1250, k.height() - 148), // On ground, inside map bounds
             k.color(0, 255, 255), // Cyan
             k.area(),
             k.body({ isStatic: true }),
@@ -111,22 +235,26 @@ export function sceneLevel1(k) {
 
             // Companion Follow (Lerp for smooth movement)
             if (hasCompanion && compEntity) {
-                compEntity.pos = compEntity.pos.lerp(player.pos.sub(0, 50), 0.1);
+                if (compEntity) {
+                    compEntity.pos = compEntity.pos.lerp(player.pos.sub(0, 50), 0.1);
+                }
             }
 
-            // Left/Right Movement
-            if (isLeft()) {
-                player.move(-SPEED, 0);
-                player.flipX = true;
-            }
-            if (isRight()) {
-                player.move(SPEED, 0);
-                player.flipX = false;
-            }
+            // Left/Right Movement: BLOCKED by Dialog
+            if (!isDialogActive) {
+                if (isLeft()) {
+                    player.move(-SPEED, 0);
+                    player.flipX = true;
+                }
+                if (isRight()) {
+                    player.move(SPEED, 0);
+                    player.flipX = false;
+                }
 
-            // Jump
-            if (isJump() && player.isGrounded()) {
-                player.jump(JUMP_FORCE);
+                // Jump
+                if (isJump() && player.isGrounded()) {
+                    player.jump(JUMP_FORCE);
+                }
             }
 
             // Fall check (Reset if falls off world)
@@ -257,7 +385,17 @@ export function sceneLevel1(k) {
                     k.sprite(comp.sprite, { height: 30 }), // Aspect ratio fix
                     k.pos(player.pos.sub(40, 40)),
                     k.anchor("center"),
+                    k.anchor("center"),
                     "companion"
+                ]);
+
+                // Visual Shield
+                player.add([
+                    k.circle(50), // Radius covering player
+                    k.color(0, 255, 255),
+                    k.opacity(0.2),
+                    k.anchor("center"),
+                    "shield_visual"
                 ]);
 
                 // Resume Game
@@ -277,32 +415,76 @@ export function sceneLevel1(k) {
             } else {
                 k.shake(20);
                 k.wait(0.5, () => {
-                    k.go("level1"); // Fix: Use level1 instead of "game" if that's the key
+                    k.go("level1");
                 });
             }
         });
 
         // Test Hazard "Honguito Malo"
+        // Toxic Placebo (Honguito Malo)
         k.add([
-            k.text("Honguito\nMalo", { size: 16 }),
+            k.sprite("placebo", { height: 40 }),
             k.pos(600, k.height() - 100),
-            k.color(255, 0, 255), // Magenta placeholder
             k.area(),
+            k.anchor("center"),
+            // Animate floating effect
+            {
+                update() {
+                    this.pos.y += Math.sin(k.time() * 4) * 0.5;
+                }
+            },
             "hazard"
         ]);
 
         player.onCollide("hazard", (h) => {
-            player.hurt(1);
-            // Optional: pushback
-            if (player.pos.x < h.pos.x) {
-                player.move(-500, -200);
+            if (hasCompanion) {
+                // Companion sacrifices itself to protect Keila
+                // Give player invulnerability so they can escape the hazard
+                player.makeInvulnerable(2);
+
+                // Pushback to ensure they leave trigger area
+                if (player.pos.x < h.pos.x) {
+                    player.move(-1500, -500); // Stronger pushback
+                } else {
+                    player.move(1500, -500);
+                }
+
+                k.shake(10);
+                k.destroy(compEntity);
+
+                // Remove visual shield
+                const shield = player.get("shield_visual")[0];
+                if (shield) k.destroy(shield);
+
+                hasCompanion = false;
+                compEntity = null;
+
+                k.add([
+                    k.text("¡Compañía Sacrificada!", { size: 24 }),
+                    k.pos(player.pos.sub(0, 50)),
+                    k.anchor("center"),
+                    k.color(255, 0, 0),
+                    k.lifespan(1),
+                    k.opacity(1)
+                ]);
             } else {
-                player.move(500, -200);
+                player.hurt(1);
+                k.destroy(h); // Destroy the placebo so it disappears
+                // Pushback
+                if (player.pos.x < h.pos.x) {
+                    player.move(-1000, -400);
+                } else {
+                    player.move(1000, -400);
+                }
             }
         });
 
         // Portal Logic
+        let levelComplete = false;
         player.onCollide("portal", () => {
+            if (levelComplete) return;
+            levelComplete = true;
+
             k.add([
                 k.text("¡Etapa 1 Completada!", { size: 48 }),
                 k.pos(k.center()),

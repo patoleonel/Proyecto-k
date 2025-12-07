@@ -1,10 +1,3 @@
-# CONTEXTO MAESTRO: Proyecto Videojuego "El Camino de Keila" (v2.0)
-
-**ESTE DOCUMENTO ES LA FUENTE ÚNICA DE VERDAD (SINGLE SOURCE OF TRUTH).**
-Cualquier instrucción de desarrollo debe alinearse estrictamente con las decisiones aquí descritas.
-
----
-
 ## 1. Resumen Ejecutivo y Restricciones
 Juego de plataformas 2D ("Giftware") para celebrar el 30 cumpleaños de **Keila**. Una travesía introspectiva sobre el crecimiento, la sombra y la integración del ser.
 
@@ -32,7 +25,8 @@ Juego de plataformas 2D ("Giftware") para celebrar el 30 cumpleaños de **Keila*
 
 ### 3.1 Loop Principal (Vida y Daño)
 * **Salud Total:** 5 Corazones.
-* **Daño (El "Honguito Malo"):** El objeto dañino se llama paradójicamente **"Salud"** (representando hipocondría o pensamientos intrusivos). Si se toca, **resta** una vida.
+* **Daño (El "Placebo Tóxico"):** Conocido en desarrollo como *"Honguito Malo"*, este objeto se visualiza paradójicamente como un ítem de **"Salud"** (representando hipocondría, automedicación errónea o pensamientos intrusivos disfrazados de solución).
+    *   **Efecto:** Si se toca, **resta** una vida en lugar de sumarla.
 * **Curación (Recuperar Vida):** Elementos que restauran corazones perdidos:
     * Ítem: *Sillón de Terapia*.
     * Ítem: *Lapicera y Cuaderno*.
@@ -49,9 +43,9 @@ Una dimensión alternativa regida por **Camelia** (La Sombra/Evil Mica).
 * **Salida (Condición de Victoria):**
     1.  Encontrar a **"Tu Yo del Upside Down"**.
     2.  Localizar el ítem **"Terapia"** (visible pero bloqueado por obstáculos/pinches).
-    3.  [cite_start]**La Pregunta Poética:** Responder una pregunta existencial basada en *Caramelo de Trampas* [cite: 1] para volver:
-        * [cite_start]*Ejemplo:* "Si todo es trampa y la trampa no..." -> **"...existe"** [cite: 278-279].
-        * *Ejemplo:* "¿Qué es la sangre cuando su altar te deja de...?" [cite_start]-> **"...rodillas"** [cite: 166-167].
+    3.  **La Pregunta Poética:** Responder una pregunta existencial basada en *Caramelo de Trampas* para volver:
+        * *Ejemplo:* "Si todo es trampa y la trampa no..." -> **"...existe"**.
+        * *Ejemplo:* "¿Qué es la sangre cuando su altar te deja de...?" -> **"...rodillas"**.
 
 ### 3.3 Sistema de Compañías y Sacrificio
 * **Mecánica de Avance:** Para pasar de un "Mundo/Etapa" al siguiente, Keila debe **dejar atrás** a una de sus compañías activas.
@@ -85,11 +79,11 @@ El personaje cambia según ítems y etapa, pero respeta una cronología base:
 * **Jefe Final:** No se derrota a golpes. Se resiste.
 * **Revelación:** La figura encapuchada es **Camelia** (Evil Mica).
 * **Resolución:** Keila debe abrazar a Camelia.
-* **Efecto:** Revelacion del nombre Camelia, transformandose en Micaela,fusión épica, música triunfal, los colores se estabilizan. Integración de la sombra.
+* **Efecto:** Revelacion del nombre Camelia, transformandose en Micaela, fusión épica, música triunfal, los colores se estabilizan. Integración de la sombra.
 
 ---
 
 ## 5. Activos y Estética
 * **Estilo:** Pixel art sobrepuesto en **Fotografías Reales** (Fondos/Plataformas).
 * **UI:** Barra de 5 corazones, Carta de Tarot (indicador de nivel/estado).
-* [cite_start]**Textos:** Uso de *Caramelo de Trampas* [cite: 1] para narrativa y acertijos.
+* **Textos:** Uso de *Caramelo de Trampas* para narrativa y acertijos.

@@ -11,19 +11,22 @@ export function createPlayer(k, pos) {
             maxHp: 5,
             isInvulnerable: false,
 
+            makeInvulnerable(time = 1) {
+                this.isInvulnerable = true;
+                this.opacity = 0.5;
+                k.wait(time, () => {
+                    this.isInvulnerable = false;
+                    this.opacity = 1;
+                });
+            },
+
             hurt(amount) {
                 if (this.isInvulnerable) return;
 
                 this.hp -= amount;
                 if (this.hp < 0) this.hp = 0;
 
-                // Invulnerability frame
-                this.isInvulnerable = true;
-                this.opacity = 0.5;
-                k.wait(1, () => {
-                    this.isInvulnerable = false;
-                    this.opacity = 1;
-                });
+                this.makeInvulnerable(1);
 
                 k.shake(10);
 
