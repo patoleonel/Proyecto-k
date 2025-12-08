@@ -1,8 +1,8 @@
 // [1] VIDEO SOURCE
-import introVideoPath from "../../assets_nivel1/saludo_inicial.mov";
+import introVideoPath from "../assets/nivel1/saludo_inicial.mov";
 
 // [2] MUSIC SOURCE
-import introMusicPath from "../../assets_nivel1/intro.wav";
+import introMusicPath from "../assets/nivel1/intro.wav";
 
 export function sceneIntro(k) {
     k.scene("intro", () => {
