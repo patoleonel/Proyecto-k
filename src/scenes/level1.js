@@ -5,496 +5,341 @@ import { startDialog } from "../ui/dialog";
 
 export function sceneLevel1(k) {
     k.scene("level1", () => {
-        k.setGravity(0);
+        k.setGravity(1600);
         let isGamePaused = false;
         let isDialogActive = true;
+        let isPlayerEvolved = false;
 
-        // Intro Narrative
-        isGamePaused = true;
-        startDialog(k, [
-            "Bienvenida a la existencia.",
-            "Todo es extraño y nuevo aqui.",
-            "Camina hacia la derecha para crecer."
-        ], () => {
-            isGamePaused = false;
-            isDialogActive = false;
-            k.setGravity(1600);
-        });
-
-        // Input Setup
-        const { isLeft, isRight, isJump } = setupInput(k);
-        const SPEED = 320;
-        const JUMP_FORCE = 800;
-
-        // Background
-        k.setBackground(135, 206, 235);
-
-        // 2. Distant Scenery (Clouds, Bushes)
-        for (let i = 0; i < 20; i++) {
-            // Clouds (Moving)
-            k.add([
-                k.sprite("cloud"),
-                k.pos(k.rand(-500, 5000), k.rand(0, 300)),
-                k.scale(0.15),
-                k.z(-100),
-                k.move(20, 0), // Slow drift to the right
-                "cloud"
-            ]);
-
-            // Bushes (Static but aligned)
-            if (i % 2 === 0) {
-                k.add([
-                    k.sprite("bush"),
-                    k.pos(i * 400 + k.rand(-50, 50), k.height() - 40), // Ground level exactly (Row 8 starts at height-40)
-                    k.anchor("bot"),
-                    k.scale(0.08),
-                    k.z(-80),
-                ]);
-            }
+        // --- AUDIO ---
+        // Play music with loop
+        try {
+            music = k.play("music", {
+                volume: 0.5,
+                loop: true
+            });
+        } catch (e) {
+            console.error("Music not found or failed to play", e);
         }
 
-        // 3. Featured Structures (Galpon, Beehives)
-        // Shed
+        // --- BACKGROUND ---
+        // User wants sky visible but also ground visible.
+        // Sky scaled down slightly to fit better or up? "Cielo gigante" -> Make smaller?
+        // Or "Cielo tiene mas para dar en la parte inferior" -> Shift up?
         k.add([
-            k.sprite("shed"),
-            k.pos(600, k.height() - 40), // Aligned to floor
-            k.anchor("bot"),
-            k.scale(0.3),
-            k.z(-90)
+            k.sprite("cielo"),
+            k.pos(0, -200), // Shift up to show bottom part
+            k.fixed(),
+            k.scale(k.width() / 640),
+            k.z(-1000)
         ]);
 
-        // Beehives
-        k.add([
-            k.sprite("beehive"),
-            k.pos(300, k.height() - 40),
-            k.anchor("bot"),
-            k.scale(0.1),
-            k.z(-89)
-        ]);
+        // --- DECORATION (Clouds) ---
+        for (let i = 0; i < 8; i++) {
+            k.add([
+                k.sprite("cloud"),
+                k.pos(k.rand(0, 5000), k.rand(50, 400)),
+                k.scale(k.rand(0.3, 0.6)), // Larger clouds
+                k.z(-100),
+                k.move(k.rand(15, 40), 0),
+                "cloud"
+            ]);
+        }
 
+        // --- UI ---
         k.add([
-            k.sprite("beehive"),
-            k.pos(450, k.height() - 40),
-            k.anchor("bot"),
-            k.scale(0.1),
-            k.z(-89)
-        ]);
-
-        // UI Layer
-        k.add([
-            k.text("Stage 1: Campestre", { size: 32 }),
+            k.text("Nivel 1: Infancia - El Campo", { size: 32, font: "monospace" }),
             k.pos(24, 24),
             k.fixed(),
             k.color(0, 0, 0),
             "ui"
         ]);
 
-        // Health UI
         const healthUI = createHealthUI(k);
 
-        // Player (Maria Micaela - New Sprite)
-        // Note: The sprite is now loaded as "maria", so createPlayer should arguably pick that up if it uses the string "maria".
-        // Let's verify player.js uses "maria" or pass it explicitly.
-        const player = createPlayer(k, k.vec2(100, k.height() - 90)); // Checks player.js next to ensure it uses sprite() logic.
+        // Player instance
+        // Scale 0.45 - 0.5 (Much bigger)
+        const player = createPlayer(k, k.vec2(100, k.height() - 400));
+        player.use(k.scale(0.15));
 
-        // Companion Logic
-        let hasCompanion = false;
-        let compEntity = null;
-
-        // Tarot Card (Event Trigger)
-        k.add([
-            k.rect(40, 60),
-            k.pos(300, k.height() - 150),
-            k.color(138, 43, 226), // Blue Violet
-            k.outline(2, k.WHITE),
-            k.area(),
-            k.body({ isStatic: true }),
-            "tarot",
-            { isCard: true }
-        ]);
-
-        const mapHeight = 10 * 20; // 10 rows * 20px
-        const levelConfig = {
-            tileWidth: 20,
-            tileHeight: 20,
-            pos: k.vec2(0, k.height() - mapHeight), // Align to bottom
+        // --- LEVEL LAYOUT ---
+        // Map Char -> Component
+        const mapConfig = {
+            tileWidth: 64,  // Using 64px grid for larger feel
+            tileHeight: 64,
+            pos: k.vec2(0, k.height() - 320),
             tiles: {
                 "=": () => [
-                    k.sprite("ground"), // Use new ground sprite
+                    k.sprite("suelo"),
+                    k.scale(0.55), // Big Ground
                     k.area(),
                     k.body({ isStatic: true }),
                     "ground"
                 ],
-                "-": () => [
-                    k.sprite("brick"),
+                "-": () => [ // Floating Log Platform
+                    k.sprite("tronco"),
+                    k.scale(0.5),
                     k.area(),
                     k.body({ isStatic: true }),
                     "platform"
                 ],
-                "$": () => [
-                    k.sprite("coin"),
+                "~": () => [ // Water
+                    k.sprite("agua"),
+                    k.scale(0.55),
                     k.area(),
-                    "coin"
+                    k.z(-10),
+                    "water",
+                    "hazard"
                 ],
-                "%": () => [
-                    k.sprite("surprise"),
+                "+": () => [ // Bridge
+                    k.sprite("puente"),
+                    k.scale(0.5),
                     k.area(),
                     k.body({ isStatic: true }),
-                    "coin-surprise"
+                    "platform"
                 ],
-                "^": () => [
-                    k.sprite("evil-shroom"),
+                "F": () => [
+                    k.sprite("power_flower"), // removed anim: idle
+                    k.scale(0.25), // Bigger flower
                     k.area(),
-                    k.body(),
                     k.anchor("bot"),
-                    "hazard",
-                    "enemy",
+                    "power_flower",
                     {
-                        dir: -1,
+                        lifeTimer: 0,
+                        totalLife: 15.0,
+                        isDead: false,
                         update() {
-                            this.move(this.dir * 40, 0); // Walk left/right
+                            if (this.isDead || isDialogActive) return;
+                            this.lifeTimer += k.dt();
+                            if (this.lifeTimer > this.totalLife * 0.75) {
+                                // this.play("wither"); // Disabled
+                                this.color = k.RED; // Visual feedback instead
+                            }
+                            if (this.lifeTimer >= this.totalLife) {
+                                this.isDead = true;
+                                // this.play("dead"); // Disabled
+                                this.color = k.BLACK; // Visual feedback
+                            }
                         }
                     }
                 ],
-                "*": () => [
-                    k.sprite("surprise"),
+                "B": () => [
+                    k.sprite("enemy_run", { anim: "run" }),
+                    k.scale(0.15), // Scale to match player?
                     k.area(),
-                    k.body({ isStatic: true }),
-                    "mushroom-surprise"
+                    k.body({ isStatic: false }), // Gravity?
+                    k.move(k.vec2(-100, 0), 0), // Moves left
+                    k.offscreen({ destroy: true }),
+                    "enemy",
+                    "hazard"
                 ],
-                "}": () => [
-                    k.sprite("unboxed"),
+                "P": () => [
+                    k.sprite("portal"),
+                    k.scale(0.25), // Bigger Portal
                     k.area(),
-                    k.body({ isStatic: true }),
-                    "unboxed"
-                ],
-                "(": () => [
-                    k.sprite("pipe-bl"),
-                    k.area(),
-                    k.body({ isStatic: true }),
-                    k.scale(0.5), // Pipes are big
-                    "pipe"
-                ],
-                ")": () => [
-                    k.sprite("pipe-br"),
-                    k.area(),
-                    k.body({ isStatic: true }),
-                    k.scale(0.5),
-                    "pipe"
-                ],
-                "[": () => [
-                    k.sprite("pipe-tl"),
-                    k.area(),
-                    k.body({ isStatic: true }),
-                    k.scale(0.5),
-                    "pipe"
-                ],
-                "]": () => [
-                    k.sprite("pipe-tr"),
-                    k.area(),
-                    k.body({ isStatic: true }),
-                    k.scale(0.5),
-                    "pipe"
-                ],
+                    k.anchor("bot"),
+                    "portal"
+                ]
             }
         };
 
-        const levelLayout = [
-            "                                                                    ",
-            "                                                                    ",
-            "                                                                    ",
-            "                                                                    ",
-            "                      ----                                          ",
-            "                                   ----                             ",
-            "           ----            %       ^             []                 ",
-            "                        ^                        ()                 ",
-            "====================================================================",
-            "====================================================================",
+        // Layout Concept:
+        // Start -> Gaps -> Water with Bridge -> Floating Logs -> Flower on Log -> More Water -> Portal
+        // Note: Using multiple strings for layers if needed, or careful char placement.
+        // We will do a single layer for physics/ground to keep it simple, changing Y pos via string rows?
+        // Kaplay map parser supports 2D array of strings.
+
+        const layout = [
+            "                                                                                                                  ",
+            "                                                                                                                  ",
+            "         B                                  B                                              B                      ",
+            "                                                                                                                  ",
+            "                                                                                                                  ",
+            "                      ----   F                           ----                                                     ",
+            "                                                                                                     P            ",
+            "                +++        ~~~~~~      +++                                                                        ",
+            "======      =======        ~~~~~~      =======     ~~~~~~      ===========    ==========    ===================",
+            "======      =======        ~~~~~~      =======     ~~~~~~      ===========    ==========    ==================="
+            // The water (~) is physically there.
+            // Problem: If player falls into ~, they sink.
+            // Bridge (+) is above ~.
         ];
 
-        k.addLevel(levelLayout, levelConfig);
+        k.addLevel(layout, mapConfig);
 
-        // Obstacle removed as per user request to clean up visuals
-
-        // Portal (Level End)
-        k.add([
-            k.rect(50, 100),
-            k.pos(1250, k.height() - 148), // On ground, inside map bounds
-            k.color(0, 255, 255), // Cyan
-            k.area(),
-            k.body({ isStatic: true }),
-            "portal"
-        ]);
-
-        // Movement Logic
-        k.onUpdate(() => {
-            if (isGamePaused) return;
-
-            // Camera Follow
-            k.camPos(player.pos);
-
-            // Companion Follow (Lerp for smooth movement)
-            if (hasCompanion && compEntity) {
-                if (compEntity) {
-                    compEntity.pos = compEntity.pos.lerp(player.pos.sub(0, 50), 0.1);
-                }
-            }
-
-            // Left/Right Movement: BLOCKED by Dialog
-            if (!isDialogActive) {
-                if (isLeft()) {
-                    player.move(-SPEED, 0);
-                    player.flipX = true;
-                }
-                if (isRight()) {
-                    player.move(SPEED, 0);
-                    player.flipX = false;
-                }
-
-                // Jump
-                if (isJump() && player.isGrounded()) {
-                    player.jump(JUMP_FORCE);
-                }
-            }
-
-            // Fall check (Reset if falls off world)
-            if (player.pos.y > 1000) {
-                k.go("level1");
-            }
-
-            // Update Health UI
-            if (player.exists()) {
-                healthUI.update(player.hp);
-            }
-        });
-
-        // Tarot Event Logic
-        player.onCollide("tarot", (t) => {
-            k.destroy(t);
-            isGamePaused = true;
-            showTarotSelection();
-        });
-
-        function showTarotSelection() {
-            // Overlay
-            k.add([
-                k.rect(k.width(), k.height()),
-                k.pos(0, 0),
-                k.fixed(),
-                k.color(0, 0, 0),
-                k.opacity(0.8),
-                "ui_overlay"
-            ]);
-
-            k.add([
-                k.text("Elige tu Compañía\n(Flechas y ESPACIO)", { size: 32, align: "center" }),
-                k.pos(k.width() / 2, 80),
-                k.anchor("center"),
-                k.fixed(),
-                k.color(255, 255, 255),
-                "ui_overlay"
-            ]);
-
-            const companions = [
-                { name: "Abeja", sprite: "abeja" },
-                { name: "Madre", sprite: "mama" },
-                { name: "Padre", sprite: "papa" },
-                { name: "Hermana", sprite: "hermana" }
-            ];
-
-            let selectedIndex = 0;
-            const buttons = [];
-
-            companions.forEach((comp, index) => {
-                const yPos = 200 + (index * 80);
-
-                // Button Background
-                const btn = k.add([
-                    k.rect(300, 60),
-                    k.pos(k.width() / 2, yPos),
-                    k.anchor("center"),
-                    k.fixed(),
-                    k.color(0, 0, 0), // Default black
-                    k.outline(4, k.WHITE),
-                    k.area(),
-                    "ui_overlay",
-                    "btn"
-                ]);
-
-                // Text
+        // Decoration: Bushes
+        for (let x = 0; x < 4000; x += 400) {
+            if (Math.random() > 0.4) {
+                // Randomize Y slightly or just place on a known ground level? 
+                // It's hard with tiles. We'll just place them generically.
                 k.add([
-                    k.text(comp.name, { size: 24 }),
-                    k.pos(k.width() / 2, yPos),
-                    k.anchor("center"),
-                    k.fixed(),
-                    k.color(255, 255, 255),
-                    "ui_overlay"
+                    k.sprite("bush"),
+                    k.pos(x, k.height() - 150),
+                    k.anchor("bot"),
+                    k.scale(0.25),
+                    k.z(-50)
                 ]);
-
-                // Icon
-                k.add([
-                    k.sprite(comp.sprite, { height: 40 }), // Maintain aspect ratio
-                    k.pos(k.width() / 2 - 120, yPos),
-                    k.anchor("center"),
-                    k.fixed(),
-                    "ui_overlay"
-                ]);
-
-                buttons.push(btn);
-
-                // Mouse Click Handler (Keep hybrid support)
-                btn.onClick(() => selectCompanion(index));
-            });
-
-            // Highlight Logic
-            function updateHighlight() {
-                buttons.forEach((btn, idx) => {
-                    if (idx === selectedIndex) {
-                        btn.color = k.rgb(100, 100, 255); // Highlight Blue
-                    } else {
-                        btn.color = k.rgb(0, 0, 0); // Default
-                    }
-                });
-            }
-            updateHighlight();
-
-            // Keyboard Handlers (Bound to this scope/state)
-            const downHandler = k.onKeyPress("down", () => {
-                selectedIndex = (selectedIndex + 1) % companions.length;
-                updateHighlight();
-            });
-            const upHandler = k.onKeyPress("up", () => {
-                selectedIndex = (selectedIndex - 1 + companions.length) % companions.length;
-                updateHighlight();
-            });
-            const confirmHandler = k.onKeyPress("space", () => {
-                selectCompanion(selectedIndex);
-            });
-
-            function selectCompanion(index) {
-                // Cleanup handlers to avoid leaks
-                downHandler.cancel();
-                upHandler.cancel();
-                confirmHandler.cancel();
-
-                // Spawn Companion
-                hasCompanion = true;
-                const comp = companions[index];
-
-                compEntity = k.add([
-                    k.sprite(comp.sprite, { height: 30 }), // Aspect ratio fix
-                    k.pos(player.pos.sub(40, 40)),
-                    k.anchor("center"),
-                    k.anchor("center"),
-                    "companion"
-                ]);
-
-                // Visual Shield
-                player.add([
-                    k.circle(50), // Radius covering player
-                    k.color(0, 255, 255),
-                    k.opacity(0.2),
-                    k.anchor("center"),
-                    "shield_visual"
-                ]);
-
-                // Resume Game
-                k.destroyAll("ui_overlay");
-                isGamePaused = false;
             }
         }
 
-        // Collision Logic
-        player.onCollide("obstacle", (obs) => {
-            if (hasCompanion) {
-                k.shake(10);
-                k.destroy(compEntity);
-                hasCompanion = false;
-                compEntity = null;
-                k.destroy(obs);
-            } else {
-                k.shake(20);
-                k.wait(0.5, () => {
-                    k.go("level1");
-                });
+        // --- INPUT & MOVEMENT ---
+        const { isLeft, isRight, isJump, isFire } = setupInput(k);
+        const SPEED = 350; // Faster for bigger map
+
+        // Initial Dialog
+        k.wait(0.5, () => {
+            startDialog(k, [
+                "Bienvenida, Micaela.",
+                "Evoluciona con la Flor y cruza el puente.",
+            ], () => {
+                isGamePaused = false;
+                isDialogActive = false;
+            });
+        });
+
+        // Shooting Logic
+        k.onKeyPress("z", () => {
+            if (isDialogActive) return;
+            if (isPlayerEvolved) {
+                shootBee();
             }
         });
 
-        // Test Hazard "Honguito Malo"
-        // Toxic Placebo (Honguito Malo)
-        k.add([
-            k.sprite("placebo", { height: 40 }),
-            k.pos(600, k.height() - 100),
-            k.area(),
-            k.anchor("center"),
-            // Animate floating effect
-            {
-                update() {
-                    this.pos.y += Math.sin(k.time() * 4) * 0.5;
+        function shootBee() {
+            const dir = player.flipX ? -1 : 1;
+            k.add([
+                k.sprite("bee"),
+                k.pos(player.pos.add(0, -40)),
+                k.scale(0.08),
+                k.area(),
+                k.move(dir * 700, 0),
+                k.lifespan(2),
+                "projectile"
+            ]);
+            k.shake(2);
+        }
+
+        k.onUpdate(() => {
+            if (isDialogActive) return;
+
+            // Camera follows Player Y somewhat to handle verticality
+            // But clamp it so we don't see too much below ground
+            const camY = Math.max(player.pos.y - 100, k.height() / 2);
+            k.camPos(player.pos.x + 300, camY);
+
+            // Movement
+            // Movement
+            const currentPrefix = isPlayerEvolved ? "super_maria" : "maria";
+
+            if (isLeft()) {
+                player.move(-SPEED, 0);
+                if (player.isGrounded() && player.curAnim() !== "run") {
+                    player.use(k.sprite(`${currentPrefix}_run`));
+                    player.play("run");
                 }
-            },
-            "hazard"
-        ]);
-
-        player.onCollide("hazard", (h) => {
-            if (hasCompanion) {
-                // Companion sacrifices itself to protect Keila
-                // Give player invulnerability so they can escape the hazard
-                player.makeInvulnerable(2);
-
-                // Pushback to ensure they leave trigger area
-                if (player.pos.x < h.pos.x) {
-                    player.move(-1500, -500); // Stronger pushback
-                } else {
-                    player.move(1500, -500);
+                player.flipX = true; // Apply flip AFTER potential sprite swap
+            } else if (isRight()) {
+                player.move(SPEED, 0);
+                if (player.isGrounded() && player.curAnim() !== "run") {
+                    player.use(k.sprite(`${currentPrefix}_run`));
+                    player.play("run");
                 }
+                player.flipX = false; // Apply flip AFTER potential sprite swap
+            } else {
+                if (player.isGrounded() && player.curAnim() !== "idle") {
+                    player.use(k.sprite(`${currentPrefix}_idle`));
+                    player.play("idle");
+                }
+                // Maintain previous flipX or set based on last direction? 
+                // Usually idle keeps last direction. Kaplay doesn't auto-reset on .use() unless completely new component.
+                // But since we just swapped component, we should re-apply if we tracked it.
+                // But 'player' entity stores flipX?
+                // Actually, component 'sprite' has flipX.
+                // If we don't set it here, it defaults to false (Right).
+                // We need to track 'lastFacing' or similar if we want Idle to persist direction.
+                // For now, let's just let it face Right (false) or keep logic simple.
+                // Re-setting player.flipX = player.flipX might work if 'player' wrapper property reads from component?
+                // player.flipX is a proxy setter.
+            }
 
-                k.shake(10);
-                k.destroy(compEntity);
+            if (isJump() && player.isGrounded()) {
+                player.jump(750);
+                player.use(k.sprite(`${currentPrefix}_jump`));
+                player.play("jump");
+                // Restore flip?
+                if (k.isKeyDown("left")) player.flipX = true;
+            }
 
-                // Remove visual shield
-                const shield = player.get("shield_visual")[0];
-                if (shield) k.destroy(shield);
+            // Fall Death / Water Death
+            if (player.pos.y > k.height() + 200) {
+                k.go("level1");
+            }
 
-                hasCompanion = false;
-                compEntity = null;
+            // Check Death State for sprite swap
+            if (player.hp <= 0 && player.curAnim() !== "dead") {
+                const prefix = isPlayerEvolved ? "super_maria" : "maria";
+                player.use(k.sprite(`${prefix}_dead`));
+                // If dead sprite has animation, play it. If single frame, just ensure it loops or stays.
+                // Our loader said sliceX: 1, so no anim "dead".
+            }
 
+            healthUI.update(player.hp);
+        });
+
+        // --- INTERACTIONS ---
+
+        player.onCollide("power_flower", (f) => {
+            if (f.isDead) {
                 k.add([
-                    k.text("¡Compañía Sacrificada!", { size: 24 }),
-                    k.pos(player.pos.sub(0, 50)),
-                    k.anchor("center"),
-                    k.color(255, 0, 0),
+                    k.text("Se marchitó...", { size: 24 }),
+                    k.pos(f.pos.sub(0, 60)),
                     k.lifespan(1),
-                    k.opacity(1)
+                    k.color(255, 0, 0)
                 ]);
+                return;
+            }
+
+            k.destroy(f);
+            k.shake(10);
+            isPlayerEvolved = true;
+            player.use(k.sprite("super_maria_idle"));
+            player.play("idle");
+
+            startDialog(k, [
+                "¡Has evolucionado!",
+                "Tecla Z para disparar."
+            ], () => {
+                isDialogActive = false;
+                k.add([
+                    k.sprite("mama"),
+                    k.pos(player.pos.add(60, -60)),
+                    k.scale(0.25),
+                    "parent"
+                ]);
+            });
+        });
+
+        player.onCollide("hazard", (e) => {
+            // Water handling
+            if (e.is("water")) {
+                // Sinking effect?
+                // Physics usually handles falling through if not static input
+                // But we want instant death or respawn
+                player.color = k.RED;
+                k.wait(0.2, () => k.go("level1"));
             } else {
                 player.hurt(1);
-                k.destroy(h); // Destroy the placebo so it disappears
-                // Pushback
-                if (player.pos.x < h.pos.x) {
-                    player.move(-1000, -400);
-                } else {
-                    player.move(1000, -400);
-                }
+                k.shake(5);
+                k.destroy(e);
             }
         });
 
-        // Portal Logic
-        let levelComplete = false;
-        player.onCollide("portal", () => {
-            if (levelComplete) return;
-            levelComplete = true;
+        k.onCollide("projectile", "enemy", (p, e) => {
+            k.destroy(p);
+            k.destroy(e);
+        });
 
-            k.add([
-                k.text("¡Etapa 1 Completada!", { size: 48 }),
-                k.pos(k.center()),
-                k.anchor("center"),
-                k.color(255, 255, 255), // White Text Fix
-                k.fixed()
-            ]);
-            k.wait(2, () => {
-                k.go("level2");
-            });
+        player.onCollide("portal", () => {
+            k.go("level2");
         });
     });
 }

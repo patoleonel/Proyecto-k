@@ -1,29 +1,114 @@
-import { setupInput } from "../utils/input";
+// [1] VIDEO SOURCE
+import introVideoPath from "../../assets_nivel1/saludo_inicial.mov";
+
+// [2] MUSIC SOURCE
+import introMusicPath from "../../assets_nivel1/intro.wav";
 
 export function sceneIntro(k) {
     k.scene("intro", () => {
         k.setBackground(0, 0, 0); // Black void
 
-        // Phase 1: The Truth
-        const title = k.add([
-            k.text("La vida es caótica...", { size: 32 }),
+        // --- AUDIO SETUP ---
+        k.loadSound("intro_music", introMusicPath);
+
+        // --- START INTERACTION ---
+        const startText = k.add([
+            k.text("Click to Start", { size: 32 }),
             k.pos(k.center()),
             k.anchor("center"),
             k.color(255, 255, 255),
-            k.opacity(0),
-            { fadeTime: 2 } // Custom state for fading
+            "start_btn"
         ]);
 
-        // Simple fade in effect
-        title.onUpdate(() => {
-            if (title.opacity < 1) {
-                title.opacity += k.dt();
+        let video = null;
+        let music = null;
+
+        k.onClick(() => {
+            if (video || music) return; // Already started
+
+            k.destroy(startText);
+
+            // --- VIDEO SETUP ---
+            video = document.createElement("video");
+            video.src = introVideoPath;
+            video.style.position = "absolute";
+            video.style.top = "50%";
+            video.style.left = "50%";
+            video.style.transform = "translate(-50%, -50%)";
+            video.style.width = "50%";
+            video.style.height = "50%";
+            video.style.objectFit = "contain";
+            video.style.zIndex = "1000";
+            video.autoplay = true;
+            video.muted = true; // Video muted, we play separate audio
+
+
+            document.body.appendChild(video);
+
+            // Explicit play attempt
+            video.play().catch(e => console.error("Video play failed:", e));
+
+            // Play music
+            music = k.play("intro_music", {
+                loop: false,
+                volume: 0.5
+            });
+
+
+
+            // When video ends
+            video.onended = () => {
+                finishIntro();
+            };
+        });
+
+        let videoEnded = false;
+
+        // --- CLEANUP ---
+        function cleanup() {
+            if (video && video.parentNode) {
+                video.pause();
+                video.parentNode.removeChild(video);
+            }
+            if (music) music.stop();
+        }
+
+        k.onSceneLeave(() => {
+            cleanup();
+        });
+
+        // --- EVENTS ---
+
+        // Skip with Space
+        k.onKeyPress("space", () => {
+            if (!videoEnded) {
+                finishIntro();
             }
         });
 
-        // Phase 2: The Choice triggers after a delay
-        k.wait(3, () => {
-            title.text = "La vida es caótica.\n\n¿Deseas Nacer?";
+        function finishIntro() {
+            if (videoEnded) return;
+            videoEnded = true;
+
+            // visually hide video components
+            video.style.display = "none";
+            if (video && video.parentNode) {
+                video.pause();
+                video.parentNode.removeChild(video);
+                // Note: We do NOT stop music here. It keeps playing.
+            }
+
+            showChoice();
+        }
+
+        function showChoice() {
+            // Phase 2: The Choice
+            const title = k.add([
+                k.text("La vida es caótica.\n\n¿Deseas Nacer?", { size: 32, align: "center" }),
+                k.pos(k.center()),
+                k.anchor("center"),
+                k.color(255, 255, 255),
+            ]);
 
             const yesBtn = k.add([
                 k.text("[ S ] SÍ", { size: 24 }),
@@ -44,33 +129,22 @@ export function sceneIntro(k) {
             ]);
 
             // Interactions
-            k.onKeyPress("s", () => {
-                k.go("level1"); // Start Game Correctly
-            });
-
+            // Interactions
+            k.onKeyPress("s", () => { if (music) music.stop(); k.go("level1"); });
             k.onKeyPress("n", () => {
-                k.shake(20); // Refusal to spawn
+                k.shake(20);
                 noBtn.text = "NO ES UNA OPCIÓN";
-                k.wait(1, () => k.go("level1")); // Illusion of choice
+                k.wait(1, () => { if (music) music.stop(); k.go("level1"); });
             });
 
-            yesBtn.onClick(() => {
-                k.go("level1");
-            });
-
+            yesBtn.onClick(() => { if (music) music.stop(); k.go("level1"); });
             noBtn.onClick(() => {
                 k.shake(20);
                 noBtn.text = "NO ES UNA OPCIÓN";
-                k.wait(1, () => k.go("level1"));
+                k.wait(1, () => { if (music) music.stop(); k.go("level1"); });
             });
+        }
 
-            // Also accept tap/click to start
-            k.onMousePress(() => {
-                // Check if not clicking buttons (handled by onClick)
-                // but for simplicity, any click works as "Yes" if not strictly handled
-                // k.go("level1"); 
-                // Commented out to prefer specific button clicks
-            });
-        });
     });
+
 }
