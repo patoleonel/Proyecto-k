@@ -1,47 +1,41 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+document.addEventListener('DOMContentLoaded', () => {
+  const startBtn = document.getElementById('start-btn');
+  const landingScreen = document.getElementById('landing');
+  const mainContentScreen = document.getElementById('main-content');
+  const bgMusic = document.getElementById('bg-music');
+  const playVideoBtn = document.getElementById('play-video-btn');
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-    app.quit();
-}
+  // Music Handling
+  // Note: Browsers block autoplay until user interaction. 
+  // We will try to play on 'Start' click.
+  
+  startBtn.addEventListener('click', () => {
+    // 1. Transition Screens
+    landingScreen.classList.remove('active');
+    landingScreen.classList.add('hidden');
+    
+    setTimeout(() => {
+        landingScreen.style.display = 'none'; // fully remove from flow if needed
+        mainContentScreen.classList.remove('hidden');
+        
+        // short delay to allow 'display: block' effects if we were toggling display
+        // but here we use opacity/transforms, so we just add active
+        requestAnimationFrame(() => {
+            mainContentScreen.classList.add('active');
+        });
+    }, 500); // match transition time roughly or half
 
-const createWindow = () => {
-    // Create the browser window.
-    const mainWindow = new BrowserWindow({
-        width: 1280,
-        height: 720,
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false, // For simple Kaplay integration without complex IPC for now
-        },
-    });
-
-    // and load the index.html of the app.
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
-
-    // Open the DevTools.
-    // mainWindow.webContents.openDevTools();
-};
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
+    // 2. Play Music
+    if (bgMusic) {
+        bgMusic.play().catch(error => {
+            console.log("Music play blocked:", error);
+        });
     }
-});
+  });
 
-app.on('activate', () => {
-    // On OS X it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
-    }
+  playVideoBtn.addEventListener('click', () => {
+      alert("Aquí se abriría el video o el modal del video. (Funcionalidad en desarrollo)");
+      // Example implementation:
+      // Open a modal or replace the placeholder with an actual iframe
+  });
 });
