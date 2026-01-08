@@ -100,4 +100,88 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Background Characters Initialization
+    const initBackground = () => {
+        const container = document.getElementById('background-characters');
+        if (!container) return;
+
+        const photos = [
+            'fotos/Abeja/abeja.png',
+            'fotos/Conde Patula/Conde Patula.png',
+            'fotos/Hermana/Hermana.png',
+            'fotos/Iva/Iva.png',
+            'fotos/Juli/Juli.png',
+            'fotos/Keila/Keila.png',
+            'fotos/Luz/luz.png',
+            'fotos/Mama/Mama.png',
+            'fotos/Marti/marti.png',
+            'fotos/Mica/mica.png',
+            'fotos/Papa/papa.png',
+            'fotos/Roja/roja.png',
+            'fotos/maria micaela/Maria Micaela.png',
+            'fotos/srta entropia/srta entropia.png',
+            'fotos/thor/Thor.png'
+        ];
+
+        // Generate denser slots procedurally to fill the screen
+        const slots = [];
+
+        // Helper to add a slot with some random jitter
+        const addSlot = (baseX, baseY) => {
+            slots.push({
+                left: (baseX + Math.random() * 2 - 1) + 'vw', // +/- 1vw jitter
+                top: (baseY + Math.random() * 2 - 1) + 'vh'
+            });
+        };
+
+        // 1. Left Columns (2 columns vertical)
+        for (let y = 5; y < 95; y += 12) {
+            addSlot(3, y);  // Inner col
+            addSlot(10, y + 6); // Outer col, offset y
+        }
+
+        // 2. Right Columns (2 columns vertical)
+        for (let y = 5; y < 95; y += 12) {
+            addSlot(92, y);
+            addSlot(82, y + 6);
+        }
+
+        // 3. Top Rows (2 rows horizontal)
+        for (let x = 15; x < 85; x += 10) {
+            addSlot(x, 5);
+            addSlot(x + 5, 12);
+        }
+
+        // 4. Bottom Rows (2 rows horizontal)
+        for (let x = 15; x < 85; x += 10) {
+            addSlot(x, 92);
+            addSlot(x + 5, 84);
+        }
+
+        // Fill all slots, repeating photos as needed
+        slots.forEach(slot => {
+            // Pick a random photo
+            const photo = photos[Math.floor(Math.random() * photos.length)];
+
+            const img = document.createElement('img');
+            img.src = photo;
+            img.classList.add('bg-char');
+
+            img.style.left = slot.left;
+            img.style.top = slot.top;
+
+            // Random styling
+            const randomScale = 0.4 + Math.random() * 0.6; // Slightly smaller to accommodate density
+            img.style.transform = `scale(${randomScale})`;
+
+            // Random Animation Props
+            img.style.animationDuration = (Math.random() * 6 + 4) + 's';
+            img.style.animationDelay = -(Math.random() * 5) + 's';
+
+            container.appendChild(img);
+        });
+    };
+
+    initBackground();
+
 });
