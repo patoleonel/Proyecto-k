@@ -1,112 +1,99 @@
-# El camino de Keila
+# 🎂 Proyecto Keila - Felices 30
 
-**"El camino de Keila"** es un videojuego de plataformas 2D ("Giftware") que celebra una travesía de vida. Una experiencia introspectiva sobre el crecimiento, la integración de la sombra y la evolución personal.
+**"Proyecto Keila"** es una experiencia web interactiva creada como regalo de cumpleaños. Combina una "Landing Page" artística con un videojuego completo desarrollado en **GDevelop**, todo integrado y desplegado como una aplicación web moderna.
 
-> *"La vida es caótica. ¿Deseas nacer?"*
+> *"Este es mi regalo para ti."*
 
-## 🌟 Mecánicas Principales (Ludonarrativa)
+🔗 **Jugar ahora:** [el-camino-de-keila.com.ar](https://el-camino-de-keila.com.ar)
 
-El juego se basa en la "Ingeniería de las Obviedades": todo destino es inevitable, pero el camino importa.
+---
 
-*   **Evolución Temporal**: El personaje crece y cambia de forma (Skin) a medida que avanza por las etapas de la vida:
-    1.  **Maria Micaela** (0-10): Campestre e inocente.
-    2.  **Mica** (10-20): La etapa escolar y el campo mixto.
-    3.  **Srta. Entropía**: La juventud y el caos.
-    4.  **Roja**: La madurez previa.
-    5.  **Keila**: La forma final.
+## 🌟 Características Principales
 
-*   **Sistema de Compañías**: No hay "vidas" tradicionales. Tus "vidas" son tus seres queridos (Compañías).
-    *   Aparecen como **Eventos de Tarot**.
-    *   Actúan como escudo (Sacrificio) ante el daño.
-    *   Algunas compañías pueden ser "dañinas" o emocionalmente complejas.
+### 1. Landing Page Interactiva
+Una entrada visualmente impactante diseñada con **HTML5, CSS3 y Vanilla JavaScript**.
+- **Personajes Flotantes**: Fondo dinámico con 15 personajes (fotos pixeladas) que flotan, rebotan y reaccionan al pasar el mouse (efecto "jitter" y escala).
+- **Sistema de Grid Procedural**: Los personajes se distribuyen inteligentemente alrededor del contenido central para evitar superposiciones.
+- **Video Secreto**: Acceso protegido por contraseña ("DOITFORHER") para ver un video especial de cumpleaños.
+- **Audio**: Música de fondo ambiental ("Intro") integrada.
 
-*   **El "Upside Down"**: Una dimensión alternativa regida por la Sombra (*Camelia*). Controles invertidos y soledad absoluta.
+### 2. Videojuego Integrado (GDevelop)
+El corazón del regalo es un juego de plataformas exportado desde **GDevelop 5** e incrustado en la carpeta `game_export/`.
+- **Mecánica única**: Plataformas y narrativa personal.
+- **Opción "No Nacer"**: Un botón/opción especial dentro del juego que permite al jugador "arrepentirse" y salir inmediatamente a la pantalla de inicio.
+  - *Técnica*: Se implementó un "parche" en el código exportado (`code0.js`) y un override de `window.close()` para asegurar que esta acción redirija al usuario sin errores, ignorando las restricciones habituales de los navegadores.
+
+### 3. Hosting & Despliegue
+- **GitHub Pages**: Alojamiento gratuito y rápido.
+- **Dominio Personalizado**: Configurado para responder en `el-camino-de-keila.com.ar` via Cloudflare/NIC.ar.
+
+---
 
 ## 🚀 Stack Tecnológico
 
-Este proyecto utiliza tecnologías web modernas empaquetadas para escritorio:
+Este repositorio contiene dos partes principales que conviven:
 
-*   **[Kaplay.js](https://kaplayjs.com/)**: Motor de videojuegos ligero y rápido (basado en Kaboom.js).
-*   **[Electron](https://www.electronjs.org/)**: Para empaquetar el juego como una aplicación nativa de Windows (`.exe`).
-*   **[Vite](https://vitejs.dev/)**: Empaquetador web ultrarrápido para el desarrollo y la construcción.
-*   **GitHub Actions**: Para el despliegue automático de la versión web en GitHub Pages.
+1.  **Frontend (Raíz)**:
+    *   **Vite**: Para el servidor de desarrollo local y hot-reloading.
+    *   **Vanilla JS**: Lógica de la landing page.
+    *   **CSS Pixel Art**: Estilos personalizados con fuentes y bordes pixelados.
 
-## 📋 Requisitos Previos
+2.  **Game (Carpeta `game_export`)**:
+    *   **GDevelop 5**: Motor visual utilizado para crear el juego.
+    *   **HTML5 Export**: El juego se exporta como una web app independiente que se carga desde la landing.
 
-Para ejecutar o modificar este proyecto en tu computadora, necesitas tener instalado:
+---
 
-1.  **[Node.js](https://nodejs.org/)** (Versión 20 o superior recomendada).
-2.  **Git** (Para clonar el repositorio).
+## 🛠️ Instalación y Desarrollo Local
 
-## 🛠️ Instalación y Configuración
+Si deseas correr este proyecto en tu máquina:
 
-Si has hecho un fork o clonado este repositorio, sigue estos pasos para instalar todas las dependencias necesarias (definidas en `package.json`):
+### Requisitos
+- [Node.js](https://nodejs.org/) (v16+)
+- Git
 
+### Pasos
 1.  **Clonar el repositorio:**
     ```bash
-    git clone https://github.com/TU_USUARIO/Proyecto-k.git
+    git clone https://github.com/patoleonel/Proyecto-k.git
     cd Proyecto-k
     ```
 
 2.  **Instalar dependencias:**
     ```bash
     npm install
+    # Instala Vite y herramientas de desarrollo
     ```
-    *Esto descargará e instalará automáticamente `kaplay`, `electron`, `vite` y todas las herramientas necesarias en la carpeta `node_modules`.*
 
-## ▶️ Comandos de Desarrollo
-
-El proyecto cuenta con varios scripts preconfigurados en `package.json`:
-
-*   **Modo Desarrollo Web** (Rápido, para probar cambios):
+3.  **Ejecutar servidor local:**
     ```bash
     npm run dev
     ```
-    *Abre un servidor local (ej. `http://localhost:5173`) con recarga automática.*
+    Visita `http://localhost:5173` para ver la landing. El juego estará en `http://localhost:5173/game_export/`.
 
-*   **Modo Desarrollo Electron** (Para probar la ventana nativa):
-    ```bash
-    npm start
-    ```
-
-*   **Construir Ejecutable** (Generar el `.exe`):
-    ```bash
-    npm run make
-    ```
-    *El ejecutable se generará en la carpeta `out/make`.*
+---
 
 ## 📂 Estructura del Proyecto
 
-El código ha sido modularizado para facilitar su mantenimiento:
-
 ```text
-ProyectoKeila/
-├── .github/workflows/   # Configuración de CI/CD (GitHub Actions)
-├── fotos/               # Assets originales (imágenes)
-├── src/                 # Código fuente del juego
-│   ├── entities/        # Lógica de entidades (Jugador, Enemigos)
-│   │   └── player.js    # Lógica de Keila/Maria Micaela
-│   ├── scenes/          # Escenas del juego
-│   │   ├── intro.js     # Pantalla de inicio
-│   │   └── level1.js    # Etapa 1: Campestre
-│   ├── utils/           # Utilidades generales
-│   │   ├── input.js     # Adaptador de controles (Teclado/Touch)
-│   │   └── loader.js    # Cargador centralizado de assets
-│   ├── game.js          # Punto de entrada (Inicialización)
-│   ├── main.js          # Proceso principal de Electron
-│   └── index.html       # Punto de entrada Web
-├── package.json         # Lista de dependencias y scripts
-├── vite.config.js       # Configuración de Vite
-└── forge.config.js      # Configuración de Electron Forge
+Proyecto-k/
+├── public/              # Assets estáticos
+├── fotos/               # Fotos de personajes para el fondo
+├── video/               # Video del regalo (protegido)
+├── src/                 # Código fuente de la Landing Page
+│   ├── main.js          # Lógica de fondo, contraseñas y música
+│   └── style.css        # Estilos visuales
+├── game_export/         # EL JUEGO (Exportado de GDevelop)
+│   ├── index.html       # Entrada del juego (con parches de salida)
+│   ├── code0.js         # Lógica compilada (parcheada para salida rápida)
+│   └── data.js          # Datos del juego
+├── index.html           # Landing Page Principal
+├── package.json         # Scripts y dependencias (Vite)
+└── README.md            # Documentación
 ```
 
-## 🎮 Controles
+## 📄 Notas de Desarrollo
+- **Parche de Salida**: Si regeneras el juego en GDevelop, deberás volver a aplicar el parche en `game_export/code0.js` para que el botón "No nacer y salir" redirija correctamente a `../index.html`. Busca la función asociada al texto "No nacer y salir" y reemplaza `stopGame()` con `window.location.href = "../index.html"`.
 
-El juego utiliza un sistema de control híbrido:
-
-*   **Teclado**: `ESPACIO` para saltar, Flechas `IZQ/DER` o `A/D` para moverse.
-*   **Touch/Mouse**: Tocar la pantalla o hacer clic para saltar (el movimiento es automático o por zonas en versiones futuras).
-
-## 📄 Licencia
-
-Este proyecto es un regalo personal. Todos los derechos de las imágenes y assets pertenecen a Patricio Brite
+---
+*Hecho con ❤️ para Keila.*
