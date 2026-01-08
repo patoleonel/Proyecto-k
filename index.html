@@ -16,40 +16,40 @@
         <!-- Landing Screen -->
         <section id="landing" class="screen active">
             <div class="pixel-container">
-                <h1 class="title">HAPPY<br>LVL 30<br>KEILA</h1>
-                <p class="subtitle">INSERT COIN TO START</p>
+                <h1 class="title">FELICES 30<br>KEILA</h1>
+                <p class="subtitle">ESTE ES MI REGALO PARA TI</p>
                 <div class="decoration-container">
                     <div class="pixel-star">★</div>
                 </div>
-                <button id="start-btn" class="pixel-btn">START GAME</button>
+                <button id="start-btn" class="pixel-btn">JUGAR</button>
             </div>
         </section>
 
         <!-- Main Content Screen (Hidden initially) -->
         <section id="main-content" class="screen hidden">
             <div class="pixel-container content-wrapper">
-                <h2 class="level-header">LEVEL 1: THE GIFT</h2>
-                <p class="pixel-text">CHOOSE YOUR REWARD</p>
+                <h2 class="level-header">NIVEL 1: EL REGALO</h2>
+                <p class="pixel-text">ELIGE TU CAMINO</p>
 
                 <div class="actions">
                     <!-- Game Download Section -->
                     <div class="pixel-card">
-                        <div class="card-header">GAME.EXE</div>
+                        <div class="card-header">EL CAMINO DE KEILA</div>
                         <div class="card-body">
                             <p>Una aventura epica.</p>
-                            <a href="#" id="download-link" class="pixel-btn small" target="_blank">DOWNLOAD</a>
-                            <small class="bit-text">PC COMPATIBLE</small>
+                            <a href="./game_export/index.html" id="play-game-btn" class="pixel-btn small">JUGAR</a>
+                            <small class="bit-text">PC / WEB</small>
                         </div>
                     </div>
 
                     <!-- Video Section -->
                     <div class="pixel-card video-card">
-                        <div class="card-header">MEMORY.MP4</div>
+                        <div class="card-header">VIDEO.MP4</div>
                         <div class="card-body">
                             <div class="video-placeholder-vertical">
-                                <span class="blink">NO SIGNAL</span>
+                                <span class="blink">LA CONTRASEÑA ESTÁ AL FINAL DEL JUEGO</span>
                             </div>
-                            <button id="play-video-btn" class="pixel-btn small">PLAY TAPE</button>
+                            <button id="play-video-btn" class="pixel-btn small">VER VIDEO</button>
                         </div>
                     </div>
                 </div>
@@ -62,8 +62,23 @@
             <!-- <source src="/music/8bit_birthday.mp3" type="audio/mpeg"> -->
         </audio>
 
+        <!-- Password Modal -->
+        <div id="password-modal" class="modal hidden">
+            <div class="pixel-container modal-content">
+                <h3 class="modal-title">CHECK DE SEGURIDAD BY CONDE PÁTULA</h3>
+                <p class="pixel-text">INGRESA LA CONTRASEÑA</p>
+                <input type="text" id="password-input" class="pixel-input" placeholder="PASSWORD" autocomplete="off" />
+                <div class="modal-actions">
+                    <button id="cancel-btn" class="pixel-btn small">CANCELAR</button>
+                    <button id="unlock-btn" class="pixel-btn small">VER VIDEO</button>
+                </div>
+                <p id="error-msg" class="bit-text blink hidden" style="color: #ff0055; margin-top: 10px;">> ACCESO
+                    DENEGADO</p>
+            </div>
+        </div>
+
     </div>
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="./src/main.js"></script>
 </body>
 
 </html>

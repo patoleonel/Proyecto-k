@@ -1,0 +1,12 @@
+{
+  "name": "El camino de Keila",
+  "short_name": "El camino de Keila",
+  "id": "com.example.gamename",
+  "description": "",
+  "orientation": "any",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "black",
+  "categories": ["games", "entertainment"],
+  "icons": []
+}

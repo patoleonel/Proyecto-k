@@ -276,3 +276,88 @@ p.subtitle {
     max-width: 300px;
   }
 }
+
+.pixel-link {
+  color: var(--accent-cyan);
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.pixel-link:hover {
+  color: var(--accent-pink);
+  border-bottom: 2px solid var(--accent-pink);
+  letter-spacing: 1px;
+}
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+.modal.hidden {
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  /* Keep layout but hide visually to allow transition */
+}
+
+.modal-content {
+  border: 4px solid var(--accent-pink) !important;
+  box-shadow: 0 0 20px var(--accent-pink);
+  max-width: 500px;
+}
+
+.modal-title {
+  color: var(--accent-pink);
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.pixel-input {
+  background: #000;
+  border: 2px solid var(--accent-cyan);
+  color: var(--accent-cyan);
+  font-family: var(--font-pixel);
+  font-size: 1rem;
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+  outline: none;
+  text-align: center;
+}
+
+.pixel-input:focus {
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 10px var(--accent-yellow);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.blink {
+  animation: blink 1s infinite;
+}
+
+/* Utility to ensure hidden class works with specificity */
+.hidden {
+  display: none !important;
+}
