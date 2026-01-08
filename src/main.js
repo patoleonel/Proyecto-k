@@ -68,8 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
             videoCardPlaceholder.innerHTML = `
             <div style="width: 100%; height: 100%; background: black; display: flex; align-items: center; justify-content: center;">
                 <video controls autoplay style="width: 100%; height: 100%; object-fit: contain;">
-                    <source src="./video/FELIcUMPLEkEILA.mov" type="video/mp4">
-                    <source src="./video/FELIcUMPLEkEILA.mov" type="video/quicktime">
+                    <source src="./video/FelCumK.mp4" type="video/mp4">
+                    <source src="./video/FelCumK.mp4" type="video/quicktime">
                     Your browser does not support the video tag.
                 </video>
             </div>
